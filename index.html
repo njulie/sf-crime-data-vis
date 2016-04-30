@@ -3,14 +3,39 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 		<title>CS448B Assignment 3</title>
+		<!-- Custom CSS -->
+	    <link rel="stylesheet" href="css/main.css" type="text/css">
+		<!-- Bootstrap -->
+    	<link href="css/bootstrap.min.css" rel="stylesheet">
 	</head>
 
 	<body>
 		<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		<header>
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-8 col-md-offset-2 text-center">
+						<h1>SF Crime Visualization</h1>
+					</div>
+				</div>
+			</div>
+		</header>
 
-		<h1>SF Crime Visualization</h1>
+		<section id="map">
+	        <div class="container">
+	            <div class="row text-center">
+	                <div class="col-lg-8 text-center" id="map-container">
+	                </div>
+					<div class="col-lg-4" id="map-controls">
+						<h3>Test Controller</h3>
+					</div>
+	            </div>
+	        </div>
+	    </section>
+
+
 		<script src="js/map.js"></script>
-		
+
 		<script src="js/crimeData.js"></script>
 	</body>
 </html>

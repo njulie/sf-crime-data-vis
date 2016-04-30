@@ -12,7 +12,7 @@ var projection = d3.geo.mercator()
 // projection([lon, lat]) returns [x, y]
 
 // Add an svg element to the DOM
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#map-container").append("svg")
 	.attr("width", width)
 	.attr("height", height);
 
