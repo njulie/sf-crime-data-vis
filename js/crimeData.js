@@ -1,11 +1,11 @@
 // load the data
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
-	plotInitialData(crimes.data);
+	visualizeData(crimes.data);
 });
 
-
-function plotInitialData(crimes) {
+// Initial Visualization of the Crime Data
+function visualizeData(crimes) {
 	var svgContainer = d3.select("svg");
 
 	// Default Display all crimes
@@ -19,6 +19,7 @@ function plotInitialData(crimes) {
 				.range(["#ff7f0e", "#17becf", "#1f77b4"]);
 
 
+	// Set Color Attributes
 	var circleAttributes = circles
 							.attr("cx", function (d) { return projection(d.Location)[0]; })
 							.attr("cy", function (d) { return projection(d.Location)[1]; })
@@ -35,4 +36,16 @@ function plotInitialData(crimes) {
 									return color("evening");
 								}
 							});
+
+	// Handle Weekday Checkbox Settings
+	$(".weekdayCheckbox").on("click", function(){
+	    if(this.checked) {
+			//circles.filter(function(d) { return d.DayOfWeek === "Saturday";})
+			//			.append("circle");
+		} else {
+			var day = this.value;
+			circles.filter(function(d) {return d.DayOfWeek === day;})
+						.remove();
+		}
+	});
 }
