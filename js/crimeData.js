@@ -1,3 +1,6 @@
+// get the svg map
+var svgContainer = d3.select("svg");
+
 
 // load the data
 d3.json("scpd-incidents.json", function(error, crimes) {
@@ -7,20 +10,21 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 	setUpControls(crimes.data);
 });
 
+
 // Initial Visualization of the Crime Data
 function update(crimes) {
-	var svgContainer = d3.select("svg");
 
-
-	// Default Display all crimes
+	// Add all data points
 	var circles = svgContainer.selectAll("circle")
 						.data(crimes)
 						.attr("class", "update");
 
 
 	// Color by time of day
-	var color = d3.scale.ordinal().range(["#ff7f0e", "#17becf", "#1f77b4"]);
-
+	// Morning: pastel purple
+	// Afternoon/Evening: purple
+	// Night: dark purple/black
+	var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
 
 	circles.enter().append("circle").attr("class","enter")
 		.attr("cx", function (d) { return projection(d.Location)[0]; })
@@ -43,6 +47,7 @@ function update(crimes) {
 
 	circles.exit().remove();
 };
+
 
 
 function setUpControls(crimes) {
