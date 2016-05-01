@@ -2,29 +2,57 @@
 var svgContainer = d3.select("svg");
 
 
+// Morning: pastel purple
+// Afternoon/Evening: purple
+// Night: dark purple/black
+var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
+
+
 // load the data
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
 
 	update(crimes.data);
 	setUpControls(crimes.data);
+
+	// City A
+	d3.select("#map-container").append("img")
+		.attr("width", 60)
+		.attr("height", 60)
+		.attr("src", "citymarker.png")
+		.style("position", "absolute")
+		.style("top", "375px")
+		.style("left", "200px")
+		.style("opacity", "0.87");
+
+
+	// City B
+	d3.select("#map-container").append("img")
+		.attr("width", 60)
+		.attr("height", 60)
+		.attr("src", "citymarker.png")
+		.style("position", "absolute")
+		.style("top", "375px")
+		.style("left", "450px")
+		.style("opacity", "0.87");
+
 });
+
+
+// Display two pins for city A and city B with default radii of 30 miles
+mp_ratio = 67; // mile-to-pixel ratio roughly x pixels per 1 mile --> could check this!!!
+
+default_radius_miles = 10;
+
 
 
 // Initial Visualization of the Crime Data
 function update(crimes) {
 
-	// Add all data points
+	// Select all data points
 	var circles = svgContainer.selectAll("circle")
 						.data(crimes)
 						.attr("class", "update");
-
-
-	// Color by time of day
-	// Morning: pastel purple
-	// Afternoon/Evening: purple
-	// Night: dark purple/black
-	var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
 
 	circles.enter().append("circle").attr("class","enter")
 		.attr("cx", function (d) { return projection(d.Location)[0]; })
