@@ -12,10 +12,20 @@ var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
 
+	selectCities();
 	update(crimes.data);
 	setUpControls(crimes.data);
 
-	// City A
+});
+
+
+// Display two pins for city A and city B with default radii of 30 miles
+//mp_ratio = 67; // mile-to-pixel ratio roughly x pixels per 1 mile --> could check this!!!
+
+//default_radius_miles = 10;
+
+function selectCities() {
+	// City A push pin
 	d3.select("#map-container").append("img")
 		.attr("width", 60)
 		.attr("height", 60)
@@ -25,8 +35,7 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 		.style("left", "200px")
 		.style("opacity", "0.87");
 
-
-	// City B
+	// City B push pin
 	d3.select("#map-container").append("img")
 		.attr("width", 60)
 		.attr("height", 60)
@@ -36,13 +45,14 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 		.style("left", "450px")
 		.style("opacity", "0.87");
 
-});
 
 
-// Display two pins for city A and city B with default radii of 30 miles
-mp_ratio = 67; // mile-to-pixel ratio roughly x pixels per 1 mile --> could check this!!!
 
-default_radius_miles = 10;
+
+
+	// Display default radius! --> have to edit the filter to include certain geolocation
+
+};
 
 
 
