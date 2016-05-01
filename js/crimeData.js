@@ -1,18 +1,22 @@
+
 // load the data
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
-	visualizeData(crimes.data);
+	updateData(crimes.data);
+	setUpControls(crimes.data);
 });
 
 // Initial Visualization of the Crime Data
-function visualizeData(crimes) {
+function updateData(crimes) {
 	var svgContainer = d3.select("svg");
 
 	// Default Display all crimes
 	var circles = svgContainer.selectAll("circle")
-						.data(crimes)
-						.enter()
-						.append("circle");
+						.data(crimes);
+
+	circles.attr("class", "update");
+
+	circles.enter().append("circle").attr("class","enter");
 
 	// Color by time of day
 	var color = d3.scale.ordinal()
@@ -37,15 +41,30 @@ function visualizeData(crimes) {
 								}
 							});
 
+	circles.exit().remove();
+}
+
+function setUpControls(crimes) {
+
+	// Shallow Copy of Data to display
+	var curr_crimes = crimes.slice(0);
+
 	// Handle Weekday Checkbox Settings
 	$(".weekdayCheckbox").on("click", function(){
-	    if(this.checked) {
-			//circles.filter(function(d) { return d.DayOfWeek === "Saturday";})
-			//			.append("circle");
+		var day = this.value;
+		if(this.checked) {
+			var temp_vals = crimes.filter(function(value) {
+				return value.DayOfWeek === day;
+			});
+			curr_crimes = curr_crimes.concat(temp_vals);
 		} else {
-			var day = this.value;
-			circles.filter(function(d) {return d.DayOfWeek === day;})
-						.remove();
+			curr_crimes = curr_crimes.filter(function(value) {
+				return value.DayOfWeek !== day;
+			});
 		}
+		updateData(curr_crimes);
 	});
+
+	
+
 }
