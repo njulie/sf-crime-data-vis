@@ -12,47 +12,71 @@ var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
 
-	selectCities();
+	drawCityPins(200, 375, 450, 375);
 	update(crimes.data);
 	setUpControls(crimes.data);
-
 });
 
 
-// Display two pins for city A and city B with default radii of 30 miles
-//mp_ratio = 67; // mile-to-pixel ratio roughly x pixels per 1 mile --> could check this!!!
+// This function repositions the city pins when dragged
+function mover(d) {
+	var dragged = d3.select(this);
+	var radius = parseInt(dragged.attr("width")) / 2;
+	var svgWidth = parseInt(svgContainer.attr("width")),
+		svgHeight = parseInt(svgContainer.attr("height"));
 
-//default_radius_miles = 10;
+	dragged
+    	.attr("x", Math.max(radius, Math.min(svgWidth - radius, d3.event.x) - radius))
+    	.attr("y", Math.max(radius, Math.min(svgHeight - radius, d3.event.y) - radius));
 
-function selectCities() {
+    	// ^^ may have to examine d3.mouse(container) for chrome..? perhaps. Idk yet
+};
+
+// This function draws the city pins and makes them draggable!
+function drawCityPins(Ax, Ay, Bx, By) {
+
+	var drag = d3.behavior.drag()
+		.on("drag", mover);
+
 	// City A push pin
-	d3.select("#map-container").append("img")
-		.attr("width", 60)
-		.attr("height", 60)
-		.attr("src", "citymarker.png")
-		.style("position", "absolute")
-		.style("top", "375px")
-		.style("left", "200px")
-		.style("opacity", "0.87");
+	svgContainer.append("image")
+		.attr("x", Ax)
+  		.attr("y", Ay)
+  		.attr("height", 60)
+  		.attr("width", 60)
+  		.attr("xlink:href", "citymarker.png")
+  		.attr("class", "cityPins")
+  		.attr("id", "cityA")
+		.style("opacity", "0.87")
+		.call(drag);
 
 	// City B push pin
-	d3.select("#map-container").append("img")
-		.attr("width", 60)
-		.attr("height", 60)
-		.attr("src", "citymarker.png")
-		.style("position", "absolute")
-		.style("top", "375px")
-		.style("left", "450px")
-		.style("opacity", "0.87");
-
-
-
-
-
-
-	// Display default radius! --> have to edit the filter to include certain geolocation
+	svgContainer.append("image")
+		.attr("x", Bx)
+  		.attr("y", By)
+  		.attr("height", 60)
+  		.attr("width", 60)
+		.attr("xlink:href", "citymarker.png")
+		.attr("class", "cityPins")
+		.attr("id", "cityB")
+		.style("opacity", "0.87")
+		.call(drag);
 
 };
+
+
+function redrawCityPins(d) {
+	if (svgContainer.selectAll(".cityPins")) {
+		var Ax = d3.select("#cityA").attr("x"),
+			Ay = d3.select("#cityA").attr("y"),
+			Bx = d3.select("#cityB").attr("x"),
+			By = d3.select("#cityB").attr("y");
+
+		svgContainer.selectAll(".cityPins").remove();
+		drawCityPins(Ax, Ay, Bx, By);
+	}
+};
+
 
 
 
@@ -84,6 +108,8 @@ function update(crimes) {
 	
 
 	circles.exit().remove();
+
+	redrawCityPins(); // redraw the city pins
 };
 
 
