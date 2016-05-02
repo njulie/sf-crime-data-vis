@@ -25,34 +25,33 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 //default_radius_miles = 10;
 
 function selectCities() {
+
 	// City A push pin
-	d3.select("#map-container").append("img")
-		.attr("width", 60)
-		.attr("height", 60)
-		.attr("src", "citymarker.png")
-		.style("position", "absolute")
-		.style("top", "375px")
-		.style("left", "200px")
+	svgContainer.append("image")
+		.attr("x", 200)
+  		.attr("y", 375)
+  		.attr("height", 60)
+  		.attr("width", 60)
+  		.attr("xlink:href", "citymarker.png")
+  		.attr("class", "cityPins")
 		.style("opacity", "0.87");
 
 	// City B push pin
-	d3.select("#map-container").append("img")
-		.attr("width", 60)
-		.attr("height", 60)
-		.attr("src", "citymarker.png")
-		.style("position", "absolute")
-		.style("top", "375px")
-		.style("left", "450px")
+	svgContainer.append("image")
+		.attr("x", 450)
+  		.attr("y", 375)
+  		.attr("height", 60)
+  		.attr("width", 60)
+		.attr("xlink:href", "citymarker.png")
+		.attr("class", "cityPins")
 		.style("opacity", "0.87");
-
-
-
-
-
-
-	// Display default radius! --> have to edit the filter to include certain geolocation
-
 };
+
+
+function removeCityPins() {
+	svgContainer.selectAll(".cityPins").remove();
+};
+
 
 
 
@@ -84,6 +83,9 @@ function update(crimes) {
 	
 
 	circles.exit().remove();
+
+	removeCityPins(); // so that images doesn't keep redrawing city pins over each other
+	selectCities();
 };
 
 
