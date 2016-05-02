@@ -12,19 +12,26 @@ var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
 
-	selectCities();
+	drawCityPins();
 	update(crimes.data);
 	setUpControls(crimes.data);
-
 });
 
 
-// Display two pins for city A and city B with default radii of 30 miles
-//mp_ratio = 67; // mile-to-pixel ratio roughly x pixels per 1 mile --> could check this!!!
+// This function repositions the city pins when dragged
+function mover(d) {
+	d3.select(this)
+    	.attr("x", d3.event.x - parseInt(d3.selectAll(".cityPins").attr("width")) / 2)
+    	.attr("y", d3.event.y - parseInt(d3.selectAll(".cityPins").attr("height")) / 2);
 
-//default_radius_miles = 10;
+    	// ^^ may have to examine d3.mouse(container) for chrome..? perhaps. Idk yet
+};
 
-function selectCities() {
+// This function draws the city pins and makes them draggable!
+function drawCityPins() {
+
+	var drag = d3.behavior.drag()
+		.on("drag", mover);
 
 	// City A push pin
 	svgContainer.append("image")
@@ -34,7 +41,9 @@ function selectCities() {
   		.attr("width", 60)
   		.attr("xlink:href", "citymarker.png")
   		.attr("class", "cityPins")
-		.style("opacity", "0.87");
+  		.attr("id", "cityA")
+		.style("opacity", "0.87")
+		.call(drag);
 
 	// City B push pin
 	svgContainer.append("image")
@@ -44,7 +53,10 @@ function selectCities() {
   		.attr("width", 60)
 		.attr("xlink:href", "citymarker.png")
 		.attr("class", "cityPins")
-		.style("opacity", "0.87");
+		.attr("id", "cityB")
+		.style("opacity", "0.87")
+		.call(drag);
+
 };
 
 
@@ -85,7 +97,7 @@ function update(crimes) {
 	circles.exit().remove();
 
 	removeCityPins(); // so that images doesn't keep redrawing city pins over each other
-	selectCities();
+	drawCityPins(); // redraw the city pins
 };
 
 
