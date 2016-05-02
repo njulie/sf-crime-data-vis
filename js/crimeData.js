@@ -12,7 +12,6 @@ var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
 
-	drawCityPins();
 	update(crimes.data);
 	setUpControls(crimes.data);
 });
@@ -20,9 +19,14 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 
 // This function repositions the city pins when dragged
 function mover(d) {
-	d3.select(this)
-    	.attr("x", d3.event.x - parseInt(d3.selectAll(".cityPins").attr("width")) / 2)
-    	.attr("y", d3.event.y - parseInt(d3.selectAll(".cityPins").attr("height")) / 2);
+	var dragged = d3.select(this);
+	var radius = parseInt(dragged.attr("width")) / 2;
+	var svgWidth = parseInt(svgContainer.attr("width")),
+		svgHeight = parseInt(svgContainer.attr("height"));
+
+	dragged
+    	.attr("x", Math.max(radius, Math.min(svgWidth - radius, d3.event.x) - radius))
+    	.attr("y", Math.max(radius, Math.min(svgHeight - radius, d3.event.y) - radius));
 
     	// ^^ may have to examine d3.mouse(container) for chrome..? perhaps. Idk yet
 };
@@ -31,6 +35,7 @@ function mover(d) {
 function drawCityPins() {
 
 	var drag = d3.behavior.drag()
+
 		.on("drag", mover);
 
 	// City A push pin
@@ -60,8 +65,9 @@ function drawCityPins() {
 };
 
 
-function removeCityPins() {
-	svgContainer.selectAll(".cityPins").remove();
+function removeCityPins(d) {
+	if (svgContainer.selectAll(".cityPins"))
+		svgContainer.selectAll(".cityPins").remove();
 };
 
 
