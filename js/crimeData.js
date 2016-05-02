@@ -12,6 +12,7 @@ var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
 
+	drawCityPins(200, 375, 450, 375);
 	update(crimes.data);
 	setUpControls(crimes.data);
 });
@@ -32,16 +33,15 @@ function mover(d) {
 };
 
 // This function draws the city pins and makes them draggable!
-function drawCityPins() {
+function drawCityPins(Ax, Ay, Bx, By) {
 
 	var drag = d3.behavior.drag()
-
 		.on("drag", mover);
 
 	// City A push pin
 	svgContainer.append("image")
-		.attr("x", 200)
-  		.attr("y", 375)
+		.attr("x", Ax)
+  		.attr("y", Ay)
   		.attr("height", 60)
   		.attr("width", 60)
   		.attr("xlink:href", "citymarker.png")
@@ -52,8 +52,8 @@ function drawCityPins() {
 
 	// City B push pin
 	svgContainer.append("image")
-		.attr("x", 450)
-  		.attr("y", 375)
+		.attr("x", Bx)
+  		.attr("y", By)
   		.attr("height", 60)
   		.attr("width", 60)
 		.attr("xlink:href", "citymarker.png")
@@ -65,9 +65,16 @@ function drawCityPins() {
 };
 
 
-function removeCityPins(d) {
-	if (svgContainer.selectAll(".cityPins"))
+function redrawCityPins(d) {
+	if (svgContainer.selectAll(".cityPins")) {
+		var Ax = d3.select("#cityA").attr("x"),
+			Ay = d3.select("#cityA").attr("y"),
+			Bx = d3.select("#cityB").attr("x"),
+			By = d3.select("#cityB").attr("y");
+
 		svgContainer.selectAll(".cityPins").remove();
+		drawCityPins(Ax, Ay, Bx, By);
+	}
 };
 
 
@@ -102,8 +109,7 @@ function update(crimes) {
 
 	circles.exit().remove();
 
-	removeCityPins(); // so that images doesn't keep redrawing city pins over each other
-	drawCityPins(); // redraw the city pins
+	redrawCityPins(); // redraw the city pins
 };
 
 
