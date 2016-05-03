@@ -62,6 +62,10 @@ function drawCityPins(Ax, Ay, Bx, By) {
 		.style("opacity", "0.87")
 		.call(drag);
 
+
+	// Draw radius
+	
+
 };
 
 
