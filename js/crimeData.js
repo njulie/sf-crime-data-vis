@@ -141,9 +141,13 @@ function redrawCityPins(d) {
 var sliderA = $("#sliderA"),
 	sliderB = $("#sliderB");
 
+// Make sliders slide
 sliderA.slider();
 sliderA.on("slide", function(slideEvt) {
 	$("#sliderAVal").text(slideEvt.value);
+	d3.select("#radiusA")
+		.attr("rx", slideEvt.value)
+		.attr("ry", slideEvt.value);
 });
 
 sliderB.slider();
@@ -151,6 +155,7 @@ sliderB.on("slide", function(slideEvt) {
 	$("#sliderBVal").text(slideEvt.value);
 });
 
+// Styling slider handles
 $(".slider-handle").css("border-radius", "2px");
 
 // Changing colors of the slider knobs to match the cities
@@ -161,7 +166,12 @@ $("#Bknob .slider-handle")
 	.css("background-color", colorB)
 	.css("background-image", "none");
 
+// slider controls radii of cities
+
+
 /* ============ END CITY RADIUS FUNCTIONALITY ================*/
+
+
 
 
 function setUpControls(crimes) {
