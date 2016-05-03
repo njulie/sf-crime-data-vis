@@ -8,10 +8,13 @@ var svgContainer = d3.select("svg");
 // Morning: pastel purple
 // Afternoon/Evening: purple
 // Night: dark purple/black
-var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
+//var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
 
 var pinSize = 60, // width and height of map pins
 	defaultRadius = 100; // default city radius in pixels (must be in miles)
+
+var colorA = "#A9C9A4",
+	colorB = "#72587F";
 
 // Global Filters Array
 var filters = [[],{}];
@@ -100,7 +103,8 @@ function drawCityPins(Ax, Ay, Bx, By) {
 		.attr("ry", defaultRadius)
 		.attr("class", "cityRadius")
 		.attr("id", "radiusA")
-		.style("opacity", "0.25");
+		.style("opacity", "0.5")
+		.style("fill", colorA);
 
 	// Draw radius around pin B
 	svgContainer.append("ellipse")
@@ -110,7 +114,8 @@ function drawCityPins(Ax, Ay, Bx, By) {
 		.attr("ry", defaultRadius)
 		.attr("class", "cityRadius")
 		.attr("id", "radiusB")
-		.style("opacity", "0.25");
+		.style("opacity", "0.35")
+		.style("fill", colorB);
 }
 
 
@@ -129,6 +134,27 @@ function redrawCityPins(d) {
 /* ============== END CITY PIN DRAGGABLE FUNCTIONALITY =============== */
 
 
+
+/* ============ START CITY RADIUS FUNCTIONALITY =============== */
+
+// Initialize sliders
+var sliderA = $("#sliderA"),
+	sliderB = $("#sliderB");
+
+sliderA.slider();
+sliderA.on("slide", function(slideEvt) {
+	$("#sliderAVal").text(slideEvt.value);
+});
+
+sliderB.slider();
+sliderB.on("slide", function(slideEvt) {
+	$("#sliderBVal").text(slideEvt.value);
+});
+
+
+
+
+/* ============ END CITY RADIUS FUNCTIONALITY ================*/
 
 
 function setUpControls(crimes) {
@@ -216,10 +242,10 @@ function update(crimes) {
 	circles.enter().append("circle").attr("class","enter")
 		.attr("cx", function (d) { return projection(d.Location)[0]; })
 		.attr("cy", function (d) { return projection(d.Location)[1]; })
-		.attr("r", 2)
+		.attr("r", 1.5)
 
 		// Set Color Attributes by Time of Day
-		.style("fill", function(d) {
+		.style("fill", "#555"/*function(d) {
 			//Get hour
 			var hour = parseInt(d.Time.split(":")[0]);
 			if(hour > 4 && hour <= 12) {
@@ -229,7 +255,7 @@ function update(crimes) {
 			} else {
 				return color("evening");
 			}
-		});
+		}*/);
 
 
 	circles.exit().remove();
