@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 (function() {
 // get the svg map
 var svgContainer = d3.select("svg");
@@ -14,7 +15,6 @@ var filters = [[],{}];
 // Indexes of Different Filters
 const WEEKDAY_FILTER = 0;
 const DATERANGE_FILTER =1;
-
 
 // load the data
 d3.json("scpd-incidents.json", function(error, crimes) {
@@ -87,7 +87,7 @@ function redrawCityPins(d) {
 function setUpControls(crimes) {
 
 	// Handle Weekday Checkbox Settings
-	$(".weekdayCheckbox").on("click", function(){
+	$("#weekdayfilter :input").change(function() {
 		var day = this.value;
 		if (this.checked) {
 			var i = filters[WEEKDAY_FILTER].indexOf(day);
@@ -102,9 +102,12 @@ function setUpControls(crimes) {
 
 	// Display Date Picker
 	setUpDatePicker(crimes);
+
 	$('.input-daterange').datepicker().on("changeDate", function(e) {
 		filters[DATERANGE_FILTER].min = new Date($("#datepickermin")[0].value);
-		filters[DATERANGE_FILTER].max = new Date($("#datepickermax")[0].value);
+		var tempmax = new Date($("#datepickermax")[0].value);
+		tempmax.setDate(tempmax.getDate()+1);
+		filters[DATERANGE_FILTER].max = tempmax;
 		update(filterCrimes(crimes));
 	});
 
@@ -115,8 +118,10 @@ function setUpControls(crimes) {
 function setUpDatePicker(crimes) {
 	var maxdate = new Date(d3.max(crimes, function(d) { return d.Date;} ));
 	var mindate = new Date(d3.min(crimes, function(d) { return d.Date;} ));
-	maxdate.setDate(maxdate.getDate()+1);
+	maxdate.setDate(maxdate.getDate()+2);
 	mindate.setDate(mindate.getDate()+1);
+	filters[DATERANGE_FILTER].min = mindate;
+	filters[DATERANGE_FILTER].max = maxdate;
 	// Set up Date Range selector
 	var datepicker = $('.input-daterange').datepicker({
 		startDate: mindate,
@@ -139,7 +144,7 @@ function filterCrimes(crimes) {
 		//Filter Date Range
 		var val_date = new Date(value.Date);
 		val_date.setDate(val_date.getDate()+1);
-		if(val_date > filters[DATERANGE_FILTER].max || val_date < filters[DATERANGE_FILTER].min) {
+		if(val_date < filters[DATERANGE_FILTER].min || val_date >= filters[DATERANGE_FILTER].max) {
 			return false;
 		}
 		return true;
