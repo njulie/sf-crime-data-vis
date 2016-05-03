@@ -17,6 +17,11 @@ var pinSize = 60, // width and height of map pins
 var colorA = "#7BCC70",
 	colorB = "#72587F";
 
+// Define the div for the tooltip
+ var div = d3.select("body").append("div")
+	 .attr("class", "tooltip")
+	 .style("opacity", 0);
+
 // Global Filters Array
 var filters = [[],{}];
 
@@ -46,24 +51,24 @@ function calculateMPR(coords1, coords2) {
 	//console.log(pixelDistance);
 
 
-	/* 
-	 * SOURCE FOR THIS FUNCTION USED 
+	/*
+	 * SOURCE FOR THIS FUNCTION USED
 	 * https://www.geodatasource.com/developers/javascript
 	 * ====================================================
 	 * get distance between two points in miles
 	 */
 	function distance(lat1, lon1, lat2, lon2, unit) {
-		var radlat1 = Math.PI * lat1/180
-		var radlat2 = Math.PI * lat2/180
-		var theta = lon1-lon2
-		var radtheta = Math.PI * theta/180
+		var radlat1 = Math.PI * lat1/180;
+		var radlat2 = Math.PI * lat2/180;
+		var theta = lon1-lon2;
+		var radtheta = Math.PI * theta/180;
 		var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-		dist = Math.acos(dist)
-		dist = dist * 180/Math.PI
-		dist = dist * 60 * 1.1515
-		if (unit=="K") { dist = dist * 1.609344 }
-		if (unit=="N") { dist = dist * 0.8684 }
-		return dist
+		dist = Math.acos(dist);
+		dist = dist * 180/Math.PI;
+		dist = dist * 60 * 1.1515;
+		if (unit=="K") { dist = dist * 1.609344; }
+		if (unit=="N") { dist = dist * 0.8684; }
+		return dist;
 	}
 
 	// coords array are [lon, lat] while distance functions takes lat then long
@@ -310,21 +315,28 @@ function update(crimes) {
 	circles.enter().append("circle").attr("class","enter")
 		.attr("cx", function (d) { return projection(d.Location)[0]; })
 		.attr("cy", function (d) { return projection(d.Location)[1]; })
-		.attr("r", 1.5)
+		.attr("r", 2)
 
 		.on("mouseover", function(d) {
+			this.setAttribute('r', 10);
+			this.setAttribute("style", "fill: #F57C00");
             div.transition()
                 .duration(200)
 				.style("opacity", 0.9);
-            div.html(d.Category)
-                .style("left", (d3.event.pageX - 50) + "px")
-                .style("top", (d3.event.pageY - 40) + "px");
+            div.html(d.Category + "<br/>Resolution: " + d.Resolution)
+                .style("left", (d3.event.pageX - 60) + "px")
+                .style("top", (d3.event.pageY - 70) + "px");
             })
         .on("mouseout", function(d) {
+			this.setAttribute('r', 2);
+			this.setAttribute("style", "fill: #555");
             div.transition()
                 .duration(500)
                 .style("opacity", 0);
         })
+		.on("mouseenter", function(d) {
+			this.parentElement.appendChild(this);
+		})
 
 		// Set Color Attributes by Time of Day
 		.style("fill", "#555"/*function(d) {
