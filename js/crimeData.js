@@ -1,3 +1,4 @@
+(function() {
 // get the svg map
 var svgContainer = d3.select("svg");
 
@@ -7,13 +8,14 @@ var svgContainer = d3.select("svg");
 // Night: dark purple/black
 var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
 
+// In order filter specifiers
+var filters = [[],[]];
 
 // load the data
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
 
 	drawCityPins(200, 375, 450, 375);
-	update(crimes.data);
 	setUpControls(crimes.data);
 });
 
@@ -30,7 +32,7 @@ function mover(d) {
     	.attr("y", Math.max(radius, Math.min(svgHeight - radius, d3.event.y) - radius));
 
     	// ^^ may have to examine d3.mouse(container) for chrome..? perhaps. Idk yet
-};
+}
 
 // This function draws the city pins and makes them draggable!
 function drawCityPins(Ax, Ay, Bx, By) {
@@ -44,7 +46,7 @@ function drawCityPins(Ax, Ay, Bx, By) {
   		.attr("y", Ay)
   		.attr("height", 60)
   		.attr("width", 60)
-  		.attr("xlink:href", "citymarker.png")
+  		.attr("xlink:href", "assets/citymarker.png")
   		.attr("class", "cityPins")
   		.attr("id", "cityA")
 		.style("opacity", "0.87")
@@ -56,13 +58,13 @@ function drawCityPins(Ax, Ay, Bx, By) {
   		.attr("y", By)
   		.attr("height", 60)
   		.attr("width", 60)
-		.attr("xlink:href", "citymarker.png")
+		.attr("xlink:href", "assets/citymarker.png")
 		.attr("class", "cityPins")
 		.attr("id", "cityB")
 		.style("opacity", "0.87")
 		.call(drag);
 
-};
+}
 
 
 function redrawCityPins(d) {
@@ -75,10 +77,71 @@ function redrawCityPins(d) {
 		svgContainer.selectAll(".cityPins").remove();
 		drawCityPins(Ax, Ay, Bx, By);
 	}
-};
+}
 
 
+function setUpControls(crimes) {
 
+	// Handle Weekday Checkbox Settings
+	$(".weekdayCheckbox").on("click", function(){
+		var day = this.value;
+		if (this.checked) {
+			var i = filters[0].indexOf(day);
+			if(i !== -1) {
+				filters[0].splice(i, 1);
+			}
+		} else {
+			filters[0].push(day);
+		}
+		update(filterCrimes(crimes));
+	});
+
+	// Display Date Picker
+	setUpDatePicker(crimes);
+	$('.input-daterange').datepicker().on("changeDate", function(e) {
+		filters[1].min = new Date($("#datepickermin")[0].value);
+		filters[1].max = new Date($("#datepickermax")[0].value);
+		update(filterCrimes(crimes));
+	});
+
+	//Initialize visual
+	update(crimes);
+}
+
+function setUpDatePicker(crimes) {
+	var maxdate = new Date(d3.max(crimes, function(d) { return d.Date;} ));
+	var mindate = new Date(d3.min(crimes, function(d) { return d.Date;} ));
+	maxdate.setDate(maxdate.getDate()+1);
+	mindate.setDate(mindate.getDate()+1);
+	// Set up Date Range selector
+	var datepicker = $('.input-daterange').datepicker({
+		startDate: mindate,
+		endDate: maxdate,
+		defaultViewDate: { year: mindate.getFullYear(), month: mindate.getMonth(), day: mindate.getDate() },
+	    autoclose: true,
+	    todayHighlight: true,
+	});
+}
+
+function filterCrimes(crimes) {
+	var curr_crimes = crimes.filter(function(value) {
+		var indicator = true;
+		//Filter Days of Week
+		for(var i = 0; i < filters[0].length; i++) {
+			if(value.DayOfWeek === filters[0][i]) {
+				return false;
+			}
+		}
+		//Filter Date Range
+		var val_date = new Date(value.Date);
+		val_date.setDate(val_date.getDate()+1);
+			if(val_date > filters[1].max || val_date < filters[1].min) {
+				return false;
+			}
+		return true;
+	});
+	return curr_crimes;
+}
 
 // Initial Visualization of the Crime Data
 function update(crimes) {
@@ -93,7 +156,7 @@ function update(crimes) {
 		.attr("cy", function (d) { return projection(d.Location)[1]; })
 		.attr("r", 2)
 
-		// Set Color Attributes
+		// Set Color Attributes by Time of Day
 		.style("fill", function(d) {
 			//Get hour
 			var hour = parseInt(d.Time.split(":")[0]);
@@ -105,34 +168,11 @@ function update(crimes) {
 				return color("evening");
 			}
 		});
-	
+
 
 	circles.exit().remove();
 
 	redrawCityPins(); // redraw the city pins
-};
+}
 
-
-
-function setUpControls(crimes) {
-
-	// Shallow Copy of Data to display
-	var curr_crimes = crimes;
-
-	// Handle Weekday Checkbox Settings
-	$(".weekdayCheckbox").on("click", function(){
-		var day = this.value;
-		if (this.checked) {
-			var temp_vals = crimes.filter(function(value) {
-				return value.DayOfWeek === day;
-			});
-			curr_crimes = curr_crimes.concat(temp_vals);
-		} else {
-			curr_crimes = curr_crimes.filter(function(value) {
-				return value.DayOfWeek !== day;
-			});
-		}
-		update(curr_crimes);
-	});	
-
-};
+})();
