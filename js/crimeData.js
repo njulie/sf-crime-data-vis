@@ -141,7 +141,7 @@ function redrawCityPins(d) {
 var sliderA = $("#sliderA"),
 	sliderB = $("#sliderB");
 
-// Make sliders slide
+// Make sliders slide and control radii of cities
 sliderA.slider();
 sliderA.on("slide", function(slideEvt) {
 	$("#sliderAVal").text(slideEvt.value);
@@ -153,6 +153,9 @@ sliderA.on("slide", function(slideEvt) {
 sliderB.slider();
 sliderB.on("slide", function(slideEvt) {
 	$("#sliderBVal").text(slideEvt.value);
+	d3.select("#radiusB")
+		.attr("rx", slideEvt.value)
+		.attr("ry", slideEvt.value);
 });
 
 // Styling slider handles
@@ -165,8 +168,6 @@ $("#Aknob .slider-handle")
 $("#Bknob .slider-handle")
 	.css("background-color", colorB)
 	.css("background-image", "none");
-
-// slider controls radii of cities
 
 
 /* ============ END CITY RADIUS FUNCTIONALITY ================*/
