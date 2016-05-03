@@ -8,8 +8,13 @@ var svgContainer = d3.select("svg");
 // Night: dark purple/black
 var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
 
-// In order filter specifiers
-var filters = [[],[]];
+// Global Filters Array
+var filters = [[],{}];
+
+// Indexes of Different Filters
+const WEEKDAY_FILTER = 0;
+const DATERANGE_FILTER =1;
+
 
 // load the data
 d3.json("scpd-incidents.json", function(error, crimes) {
@@ -18,7 +23,6 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 	drawCityPins(200, 375, 450, 375);
 	setUpControls(crimes.data);
 });
-
 
 // This function repositions the city pins when dragged
 function mover(d) {
@@ -86,12 +90,12 @@ function setUpControls(crimes) {
 	$(".weekdayCheckbox").on("click", function(){
 		var day = this.value;
 		if (this.checked) {
-			var i = filters[0].indexOf(day);
+			var i = filters[WEEKDAY_FILTER].indexOf(day);
 			if(i !== -1) {
-				filters[0].splice(i, 1);
+				filters[WEEKDAY_FILTER].splice(i, 1);
 			}
 		} else {
-			filters[0].push(day);
+			filters[WEEKDAY_FILTER].push(day);
 		}
 		update(filterCrimes(crimes));
 	});
@@ -99,8 +103,8 @@ function setUpControls(crimes) {
 	// Display Date Picker
 	setUpDatePicker(crimes);
 	$('.input-daterange').datepicker().on("changeDate", function(e) {
-		filters[1].min = new Date($("#datepickermin")[0].value);
-		filters[1].max = new Date($("#datepickermax")[0].value);
+		filters[DATERANGE_FILTER].min = new Date($("#datepickermin")[0].value);
+		filters[DATERANGE_FILTER].max = new Date($("#datepickermax")[0].value);
 		update(filterCrimes(crimes));
 	});
 
@@ -127,17 +131,17 @@ function filterCrimes(crimes) {
 	var curr_crimes = crimes.filter(function(value) {
 		var indicator = true;
 		//Filter Days of Week
-		for(var i = 0; i < filters[0].length; i++) {
-			if(value.DayOfWeek === filters[0][i]) {
+		for(var i = 0; i < filters[WEEKDAY_FILTER].length; i++) {
+			if(value.DayOfWeek === filters[WEEKDAY_FILTER][i]) {
 				return false;
 			}
 		}
 		//Filter Date Range
 		var val_date = new Date(value.Date);
 		val_date.setDate(val_date.getDate()+1);
-			if(val_date > filters[1].max || val_date < filters[1].min) {
-				return false;
-			}
+		if(val_date > filters[DATERANGE_FILTER].max || val_date < filters[DATERANGE_FILTER].min) {
+			return false;
+		}
 		return true;
 	});
 	return curr_crimes;
