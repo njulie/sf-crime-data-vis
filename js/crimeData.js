@@ -13,7 +13,7 @@ var svgContainer = d3.select("svg");
 var pinSize = 60, // width and height of map pins
 	defaultRadius = 100; // default city radius in pixels (must be in miles)
 
-var colorA = "#A9C9A4",
+var colorA = "#7BCC70",
 	colorB = "#72587F";
 
 // Global Filters Array
@@ -103,7 +103,7 @@ function drawCityPins(Ax, Ay, Bx, By) {
 		.attr("ry", defaultRadius)
 		.attr("class", "cityRadius")
 		.attr("id", "radiusA")
-		.style("opacity", "0.5")
+		.style("opacity", "0.35")
 		.style("fill", colorA);
 
 	// Draw radius around pin B
@@ -151,8 +151,15 @@ sliderB.on("slide", function(slideEvt) {
 	$("#sliderBVal").text(slideEvt.value);
 });
 
+$(".slider-handle").css("border-radius", "2px");
 
-
+// Changing colors of the slider knobs to match the cities
+$("#Aknob .slider-handle")
+	.css("background-color", colorA)
+	.css("background-image", "none");
+$("#Bknob .slider-handle")
+	.css("background-color", colorB)
+	.css("background-image", "none");
 
 /* ============ END CITY RADIUS FUNCTIONALITY ================*/
 
