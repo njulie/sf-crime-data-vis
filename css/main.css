@@ -7,3 +7,15 @@ header {
     padding-top: 30px;
     padding-bottom: 30px;
 }
+
+div.tooltip {
+    text-align: center;
+    line-height: 1;
+    font-weight: bold;
+    padding: 12px;
+    font: 10px sans-serif;
+    background: black;
+    color: #fff;
+    border-radius: 2px;
+    pointer-events: none;
+}
