@@ -3,15 +3,21 @@
 // get the svg map
 var svgContainer = d3.select("svg");
 
+<<<<<<< HEAD
 // Define the div for the tooltip
 var div = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
 
+=======
+>>>>>>> 4c343052b09109308b3cdfffa9aae56f7e531275
 // Morning: pastel purple
 // Afternoon/Evening: purple
 // Night: dark purple/black
 var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
+
+var pinSize = 60, // width and height of map pins
+	defaultRadius = 100; // default city radius in pixels (must be in miles)
 
 // Global Filters Array
 var filters = [[],{}];
@@ -20,18 +26,24 @@ var filters = [[],{}];
 const WEEKDAY_FILTER = 0;
 const DATERANGE_FILTER =1;
 
+
+
+
+
 // load the data
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
 
-	drawCityPins(200, 375, 450, 375);
+	drawCityPins(200, 375, 450, 375); //default pin locations
+	update(crimes.data);
 	setUpControls(crimes.data);
 });
+
 
 // This function repositions the city pins when dragged
 function mover(d) {
 	var dragged = d3.select(this);
-	var radius = parseInt(dragged.attr("width")) / 2;
+	var radius = pinSize / 2;
 	var svgWidth = parseInt(svgContainer.attr("width")),
 		svgHeight = parseInt(svgContainer.attr("height"));
 
@@ -39,8 +51,19 @@ function mover(d) {
     	.attr("x", Math.max(radius, Math.min(svgWidth - radius, d3.event.x) - radius))
     	.attr("y", Math.max(radius, Math.min(svgHeight - radius, d3.event.y) - radius));
 
-    	// ^^ may have to examine d3.mouse(container) for chrome..? perhaps. Idk yet
+
+    // drag city radius with the pin as well
+    var cityRad;
+    if (dragged.attr("id") == "cityA") cityRad = d3.select("#radiusA");
+    else cityRad = d3.select("#radiusB");
+    cityRad
+    	.attr("cx", Math.max(parseInt(dragged.attr("x")) + radius, Math.min(svgWidth - radius, d3.event.x)))
+    	.attr("cy", Math.max(parseInt(dragged.attr("y")) + radius, Math.min(svgHeight - radius, d3.event.y)));
+
+    // ^^ may have to examine d3.mouse(container) for chrome..? perhaps. Idk yet
 }
+
+
 
 // This function draws the city pins and makes them draggable!
 function drawCityPins(Ax, Ay, Bx, By) {
@@ -52,8 +75,8 @@ function drawCityPins(Ax, Ay, Bx, By) {
 	svgContainer.append("image")
 		.attr("x", Ax)
   		.attr("y", Ay)
-  		.attr("height", 60)
-  		.attr("width", 60)
+  		.attr("height", pinSize)
+  		.attr("width", pinSize)
   		.attr("xlink:href", "assets/citymarker.png")
   		.attr("class", "cityPins")
   		.attr("id", "cityA")
@@ -64,14 +87,33 @@ function drawCityPins(Ax, Ay, Bx, By) {
 	svgContainer.append("image")
 		.attr("x", Bx)
   		.attr("y", By)
-  		.attr("height", 60)
-  		.attr("width", 60)
+  		.attr("height", pinSize)
+  		.attr("width", pinSize)
 		.attr("xlink:href", "assets/citymarker.png")
 		.attr("class", "cityPins")
 		.attr("id", "cityB")
 		.style("opacity", "0.87")
 		.call(drag);
 
+	// Draw radius around pin A
+	svgContainer.append("ellipse")
+		.attr("cx", Ax + (pinSize / 2))
+		.attr("cy", Ay + (pinSize / 2))
+		.attr("rx", defaultRadius)
+		.attr("ry", defaultRadius)
+		.attr("class", "cityRadius")
+		.attr("id", "radiusA")
+		.style("opacity", "0.25");
+
+	// Draw radius around pin B
+	svgContainer.append("ellipse")
+		.attr("cx", Bx + (pinSize / 2))
+		.attr("cy", By + (pinSize / 2))
+		.attr("rx", defaultRadius)
+		.attr("ry", defaultRadius)
+		.attr("class", "cityRadius")
+		.attr("id", "radiusB")
+		.style("opacity", "0.25");
 }
 
 
@@ -86,6 +128,7 @@ function redrawCityPins(d) {
 		drawCityPins(Ax, Ay, Bx, By);
 	}
 }
+
 
 
 function setUpControls(crimes) {
@@ -119,6 +162,8 @@ function setUpControls(crimes) {
 	update(crimes);
 }
 
+
+
 function setUpDatePicker(crimes) {
 	var maxdate = new Date(d3.max(crimes, function(d) { return d.Date;} ));
 	var mindate = new Date(d3.min(crimes, function(d) { return d.Date;} ));
@@ -135,6 +180,8 @@ function setUpDatePicker(crimes) {
 	    todayHighlight: true,
 	});
 }
+
+
 
 function filterCrimes(crimes) {
 	var curr_crimes = crimes.filter(function(value) {
@@ -155,6 +202,8 @@ function filterCrimes(crimes) {
 	});
 	return curr_crimes;
 }
+
+
 
 // Initial Visualization of the Crime Data
 function update(crimes) {
