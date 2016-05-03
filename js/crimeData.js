@@ -3,6 +3,10 @@
 // get the svg map
 var svgContainer = d3.select("svg");
 
+// Define the div for the tooltip
+var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
 // Morning: pastel purple
 // Afternoon/Evening: purple
@@ -164,7 +168,19 @@ function update(crimes) {
 		.attr("cx", function (d) { return projection(d.Location)[0]; })
 		.attr("cy", function (d) { return projection(d.Location)[1]; })
 		.attr("r", 2)
-
+		.on("mouseover", function(d) {
+            div.transition()
+                .duration(200)
+				.style("opacity", 0.9);
+            div.html(d.Category)
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+            })
+        .on("mouseout", function(d) {
+            div.transition()
+                .duration(500)
+                .style("opacity", 0);
+        })
 		// Set Color Attributes by Time of Day
 		.style("fill", function(d) {
 			//Get hour
