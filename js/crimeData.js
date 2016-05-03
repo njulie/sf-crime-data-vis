@@ -11,7 +11,8 @@ var svgContainer = d3.select("svg");
 //var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
 
 var pinSize = 60, // width and height of map pins
-	defaultRadius = 100; // default city radius in pixels (must be in miles)
+	defaultRadius = 100, // default city radius in pixels (must be in miles)
+	mileToPixelRatio = 0; // how many pixels are in a mile
 
 var colorA = "#7BCC70",
 	colorB = "#72587F";
@@ -27,10 +28,59 @@ const DATERANGE_FILTER =1;
 
 
 
+// Calculates the mile to pixel ratio used in adjusting the city radius
+// (Takes in 2 arrays of longitude and latitude for two data points)
+function calculateMPR(coords1, coords2) {
+	// get corresponding pixel values of coordinates
+	var pixels1 = projection(coords1),
+		pixels2 = projection(coords2);
+
+	// TESTING
+	//console.log(coords1 + " and " + coords2);
+	//console.log(pixels1 + " and " + pixels2);
+
+	// get distance between two points in pixels
+	var pixelX = pixels1[0] - pixels2[0];
+	var pixelY = pixels1[1] - pixels2[1];
+	var pixelDistance = Math.sqrt((pixelX * pixelX) + (pixelY * pixelY));
+	//console.log(pixelDistance);
+
+
+	/* 
+	 * SOURCE FOR THIS FUNCTION USED 
+	 * https://www.geodatasource.com/developers/javascript
+	 * ====================================================
+	 * get distance between two points in miles
+	 */
+	function distance(lat1, lon1, lat2, lon2, unit) {
+		var radlat1 = Math.PI * lat1/180
+		var radlat2 = Math.PI * lat2/180
+		var theta = lon1-lon2
+		var radtheta = Math.PI * theta/180
+		var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+		dist = Math.acos(dist)
+		dist = dist * 180/Math.PI
+		dist = dist * 60 * 1.1515
+		if (unit=="K") { dist = dist * 1.609344 }
+		if (unit=="N") { dist = dist * 0.8684 }
+		return dist
+	}
+
+	// coords array are [lon, lat] while distance functions takes lat then long
+	var mileDistance = distance(coords1[1], coords1[0], coords2[1], coords2[0], "M");
+	//console.log(mileDistance + " = distance in miles");
+
+	return (pixelDistance / mileDistance);
+}
+
 
 // Load data, setup controls
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
+
+	// calculate mile-to-pixel ratio
+	mileToPixelRatio = calculateMPR(crimes.data[0].Location, crimes.data[crimes.data.length/2].Location);
+	console.log(mileToPixelRatio + " pixels per mile!!!");
 
 	drawCityPins(200, 375, 450, 375); //default pin locations
 	update(crimes.data);
@@ -144,7 +194,7 @@ var sliderA = $("#sliderA"),
 // Make sliders slide and control radii of cities
 sliderA.slider();
 sliderA.on("slide", function(slideEvt) {
-	$("#sliderAVal").text(slideEvt.value);
+	$("#sliderAVal").text(Math.round((slideEvt.value / mileToPixelRatio) * 10) / 10); //display radius in miles
 	d3.select("#radiusA")
 		.attr("rx", slideEvt.value)
 		.attr("ry", slideEvt.value);
@@ -152,7 +202,7 @@ sliderA.on("slide", function(slideEvt) {
 
 sliderB.slider();
 sliderB.on("slide", function(slideEvt) {
-	$("#sliderBVal").text(slideEvt.value);
+	$("#sliderBVal").text(Math.round((slideEvt.value / mileToPixelRatio) * 10) / 10); //display radius in miles
 	d3.select("#radiusB")
 		.attr("rx", slideEvt.value)
 		.attr("ry", slideEvt.value);
