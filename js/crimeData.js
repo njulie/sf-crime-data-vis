@@ -35,10 +35,7 @@ function mover(d) {
 
     // drag city radius with the pin as well
     var cityRad;
-
-    // dragged pin is city A
     if (dragged.attr("id") == "cityA") cityRad = d3.select("#radiusA");
-    // dragged pin is city B
     else cityRad = d3.select("#radiusB");
     cityRad
     	.attr("cx", Math.max(parseInt(dragged.attr("x")) + radius, Math.min(svgWidth - radius, d3.event.x)))
@@ -86,7 +83,17 @@ function drawCityPins(Ax, Ay, Bx, By) {
 		.attr("ry", defaultRadius)
 		.attr("class", "cityRadius")
 		.attr("id", "radiusA")
-		.style("opacity", "0.5");
+		.style("opacity", "0.25");
+
+	// Draw radius around pin B
+	svgContainer.append("ellipse")
+		.attr("cx", Bx + (pinSize / 2))
+		.attr("cy", By + (pinSize / 2))
+		.attr("rx", defaultRadius)
+		.attr("ry", defaultRadius)
+		.attr("class", "cityRadius")
+		.attr("id", "radiusB")
+		.style("opacity", "0.25");
 
 };
 
