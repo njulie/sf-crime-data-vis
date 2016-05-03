@@ -1,5 +1,7 @@
 /*jshint esversion: 6 */
 (function() {
+
+/* ============ START GLOBAL VARIABLE DEFINITIONS ============ */
 // get the svg map
 var svgContainer = d3.select("svg");
 
@@ -18,11 +20,12 @@ var filters = [[],{}];
 const WEEKDAY_FILTER = 0;
 const DATERANGE_FILTER =1;
 
+/* ============= END GLOBAL VARIABLE DEFINITIONS ============== */
 
 
 
 
-// load the data
+// Load data, setup controls
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
 
@@ -32,7 +35,10 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 });
 
 
-// This function repositions the city pins when dragged
+
+/* ================ START CITY PIN DRAGGABLE FUNCTIONALITY =============== */
+
+// Reposition the city pins when dragged
 function mover(d) {
 	var dragged = d3.select(this);
 	var radius = pinSize / 2;
@@ -56,8 +62,7 @@ function mover(d) {
 }
 
 
-
-// This function draws the city pins and makes them draggable!
+// Draw the city pins and make them draggable!
 function drawCityPins(Ax, Ay, Bx, By) {
 
 	var drag = d3.behavior.drag()
@@ -109,6 +114,7 @@ function drawCityPins(Ax, Ay, Bx, By) {
 }
 
 
+// Redraw pins over the data points after every update
 function redrawCityPins(d) {
 	if (svgContainer.selectAll(".cityPins")) {
 		var Ax = d3.select("#cityA").attr("x"),
@@ -120,6 +126,8 @@ function redrawCityPins(d) {
 		drawCityPins(Ax, Ay, Bx, By);
 	}
 }
+/* ============== END CITY PIN DRAGGABLE FUNCTIONALITY =============== */
+
 
 
 
@@ -197,7 +205,7 @@ function filterCrimes(crimes) {
 
 
 
-// Initial Visualization of the Crime Data
+// Update crime data and city pins
 function update(crimes) {
 
 	// Select all data points
