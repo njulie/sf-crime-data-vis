@@ -3,14 +3,6 @@
 // get the svg map
 var svgContainer = d3.select("svg");
 
-<<<<<<< HEAD
-// Define the div for the tooltip
-var div = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
-
-=======
->>>>>>> 4c343052b09109308b3cdfffa9aae56f7e531275
 // Morning: pastel purple
 // Afternoon/Evening: purple
 // Night: dark purple/black
