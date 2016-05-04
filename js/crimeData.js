@@ -155,7 +155,7 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
 		.attr("ry", defaultRadius)
 		.attr("class", "cityRadius")
 		.attr("id", "radiusA")
-		.style("opacity", "0.35")
+		.style("opacity", "0.2")
 		.style("fill", colorA);
 
 	// Draw radius around pin B
@@ -409,7 +409,7 @@ function update(crimes) {
 	circles.enter().append("circle").attr("class","enter")
 		.attr("cx", function (d) { return projection(d.Location)[0]; })
 		.attr("cy", function (d) { return projection(d.Location)[1]; })
-		.attr("r", 2)
+		.attr("r", 2.5)
 
 		.on("mouseover", function(d) {
 			this.setAttribute('r', 10);
@@ -423,7 +423,7 @@ function update(crimes) {
             })
         .on("mouseout", function(d) {
 			this.setAttribute('r', 2);
-			this.setAttribute("style", "fill: #555");
+			this.setAttribute("style", "fill: #8C1717");
             div.transition()
                 .duration(500)
                 .style("opacity", 0);
@@ -432,7 +432,9 @@ function update(crimes) {
 			this.parentElement.appendChild(this);
 		})
 
-		.style("fill", "#555");
+		.style("fill", "#8C1717")
+		.style("stroke", "#999")
+		.style("stroke-width", "0.25");
 
 
 	circles.exit().remove();

@@ -15,36 +15,31 @@
 
 	<body>
 		<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-		<header>
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-md-8 col-md-offset-2 text-center">
 
-					</div>
-				</div>
-			</div>
-		</header>
 
 		<section id="map">
 	        <div class="container">
 	            <div class="row">
 					<div class="col-lg-4 text-center" id="map-controls">
 						<h1>Crimes in SF, CA</h1>
-						<h4>(March 2016)</h4>
-						<p>Julie Ni and Haiyin Wang</p>
+						<h4>--for March 2 to April 1 (2016)</h4>
 
 						<div class="radiuscontroller filtersection">
+							<p><br></p>
 							<h5>City Radii</h5>
 							<!-- slider for city A -->
 							<input id="sliderA" type="text" data-slider-id="Aknob" data-slider-min="0" data-slider-max="500" data-slider-step="1" data-slider-value="175" data-slider-tooltip="hide">
 							<span class="horizontal-padding-left" id="sliderALabel"><span id="sliderAVal">2.4</span> miles</span>
 
-							<p><br></p>
+							<p></p>
 
 							<!-- slider for city B -->
 							<input id="sliderB" type="text" data-slider-id="Bknob" data-slider-min="0" data-slider-max="500" data-slider-step="1" data-slider-value="175" data-slider-tooltip="hide">
 							<span class="horizontal-padding-left" id="sliderBLabel"><span id="sliderBVal">2.4</span> miles</span>
 						</div>
+
+						<p><br><br></p>
+						<h4>Filter By:</h4>
 
 						<div class="categorycontroller filtersection">
 							<h5>Crime Categories</h5>
@@ -137,6 +132,9 @@
 							<p></p>
 							<label id="timerangelabel">12:00 AM to 11:59 PM</label>
 						</div>
+
+						<br><br>
+						<p>Julie Ni and Haiyin Wang</p>
 						
 					</div>
 					<div class="col-lg-8" id="map-container">
