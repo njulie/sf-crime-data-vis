@@ -5,7 +5,7 @@
 // get the svg map
 var svgContainer = d3.select("svg");
 
-const pinSize = 40, // width and height of map pins
+const pinSize = 26, // width and height of map pins
 	defaultRadius = 175; // default city radius in pixels (must be in miles)
 
 var mileToPixelRatio = 0; // how many pixels are in a mile
@@ -80,7 +80,7 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 	mileToPixelRatio = calculateMPR(crimes.data[0].Location, crimes.data[crimes.data.length/2].Location);
 	console.log(mileToPixelRatio + " pixels per mile!!!");
 
-	drawCityPins(200, 375, 450, 375); //default pin locations
+	drawCityPins(200, 375, 450, 375, crimes.data); //default pin locations
 	//update(crimes.data);
 	setUpControls(crimes.data);
 });
@@ -89,40 +89,43 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 
 /* ================ START CITY PIN DRAGGABLE FUNCTIONALITY =============== */
 
-// Reposition the city pins when dragged
-function mover() {
-	var dragged = d3.select(this);
-	var radius = pinSize / 2;
-	var svgWidth = parseInt(svgContainer.attr("width")),
-		svgHeight = parseInt(svgContainer.attr("height"));
-
-	dragged
-    	.attr("x", Math.max(radius, Math.min(svgWidth - radius, d3.event.x) - radius))
-    	.attr("y", Math.max(radius, Math.min(svgHeight - radius, d3.event.y) - radius));
-
-
-    // drag city radius with the pin as well
-    var cityRad;
-    if (dragged.attr("id") == "cityA") cityRad = d3.select("#radiusA");
-    else cityRad = d3.select("#radiusB");
-    cityRad
-    	.attr("cx", Math.max(parseInt(dragged.attr("x")) + radius, Math.min(svgWidth - radius, d3.event.x)))
-    	.attr("cy", Math.max(parseInt(dragged.attr("y")) + radius, Math.min(svgHeight - radius, d3.event.y)));
-
-    // ^^ may have to examine d3.mouse(container) for chrome..? perhaps. Idk yet
-
-
-    // update the intersection - filter out the data points to reflect the changing radii
-    //update(filterCrimes(crimes));
-    
-}
-
-
 // Draw the city pins and make them draggable!
-function drawCityPins(Ax, Ay, Bx, By) {
+function drawCityPins(Ax, Ay, Bx, By, crimes) {
 
 	var drag = d3.behavior.drag()
-		.on("drag", mover);
+		/*.origin(function() { 
+	        var t = d3.select(this);
+	        return {x: t.attr("x"), y: t.attr("y")};
+	    })*/
+		.on("dragstart", function() {
+  			d3.event.sourceEvent.stopPropagation(); // silence other listeners
+		})
+		.on("drag", function() { mover(d, i, crimes); });
+		//.on("drag", mover);
+
+	// Reposition the city pins when dragged
+	function mover(d, i, crimes) {
+		var dragged = d3.select(this);
+		console.log(dragged);
+		var radius = pinSize / 2;
+		var svgWidth = parseInt(svgContainer.attr("width")),
+			svgHeight = parseInt(svgContainer.attr("height"));
+
+		dragged
+	    	.attr("x", Math.max(radius, Math.min(svgWidth - radius, d3.event.x) - radius))
+	    	.attr("y", Math.max(radius, Math.min(svgHeight - radius, d3.event.y) - radius));
+
+
+	    // drag city radius with the pin as well
+	    var cityRad;
+	    if (dragged.attr("id") == "cityA") cityRad = d3.select("#radiusA");
+	    else cityRad = d3.select("#radiusB");
+	    cityRad
+	    	.attr("cx", Math.max(parseInt(dragged.attr("x")) + radius, Math.min(svgWidth - radius, d3.event.x)))
+	    	.attr("cy", Math.max(parseInt(dragged.attr("y")) + radius, Math.min(svgHeight - radius, d3.event.y)));
+
+	    //update(filterCrimes(crimes));
+	}
 
 	// City A push pin
 	svgContainer.append("image")
@@ -172,7 +175,7 @@ function drawCityPins(Ax, Ay, Bx, By) {
 }
 
 // Redraw pins over the data points after every update
-function redrawCityPins(d) {
+function redrawCityPins(crimes) {
 	if (svgContainer.selectAll(".cityPins")) {
 		var Ax = d3.select("#cityA").attr("x"),
 			Ay = d3.select("#cityA").attr("y"),
@@ -180,7 +183,7 @@ function redrawCityPins(d) {
 			By = d3.select("#cityB").attr("y");
 
 		svgContainer.selectAll(".cityPins").remove();
-		drawCityPins(Ax, Ay, Bx, By);
+		drawCityPins(Ax, Ay, Bx, By, crimes);
 	}
 }
 /* ============== END CITY PIN DRAGGABLE FUNCTIONALITY =============== */
@@ -364,13 +367,6 @@ function filterCrimes(crimes) {
 			return false;
 		}
 
-		//Filter Category
-		if(filters[CATEGORY_FILTER].category) {
-			if(filters[CATEGORY_FILTER].category !== value.Category) {
-				return false;
-			}
-		}
-
 		//Filter Intersection
 		var distFromA = distance(filters[INTERSECTION_FILTER].A[1],
 								 filters[INTERSECTION_FILTER].A[0],
@@ -385,15 +381,14 @@ function filterCrimes(crimes) {
 			return false;
 		}
 
-		return true;
+		//Filter Crime Category
+		if(filters[CATEGORY_FILTER].category) {
+			if(filters[CATEGORY_FILTER].category !== value.Category) {
+				return false;
+			}
+		}	
 
-		//Filter Intersection
-		//function distance(lat1, lon1, lat2, lon2, unit)
-		
-		//console.log(distFromA);
-		//console.log(distFromB);
-		//if (distFromA < d3.select("#radiusA"))
-	
+		return true;
 
 	});
 
@@ -441,7 +436,7 @@ function update(crimes) {
 
 	circles.exit().remove();
 
-	redrawCityPins(); // redraw the city pins
+	redrawCityPins(crimes); // redraw the city pins
 }
 
 })();
