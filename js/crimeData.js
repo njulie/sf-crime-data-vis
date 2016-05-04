@@ -9,6 +9,7 @@ const pinSize = 26, // width and height of map pins
 	defaultRadius = 175; // default city radius in pixels (must be in miles)
 
 var mileToPixelRatio = 0; // how many pixels are in a mile
+const EARTH_RADIUS = 3959; //radius of earth in miles
 
 const colorA = "#7BCC70",
 	colorB = "#72587F";
@@ -37,7 +38,7 @@ const CATEGORY_FILTER = 4;
  * ====================================================
  * get distance between two points in miles
  */
-function distance(lat1, lon1, lat2, lon2, unit) {
+/*function distance(lat1, lon1, lat2, lon2, unit) {
 	var radlat1 = Math.PI * lat1/180;
 	var radlat2 = Math.PI * lat2/180;
 	var theta = lon1-lon2;
@@ -49,11 +50,11 @@ function distance(lat1, lon1, lat2, lon2, unit) {
 	if (unit=="K") { dist = dist * 1.609344; }
 	if (unit=="N") { dist = dist * 0.8684; }
 	return dist;
-}
+}*/
 
 // Calculates the mile to pixel ratio used in adjusting the city radius
 // (Takes in 2 arrays of longitude and latitude for two data points)
-function calculateMPR(coords1, coords2) {
+/*function calculateMPR(coords1, coords2) {
 	// get corresponding pixel values of coordinates
 	var pixels1 = projection(coords1),
 		pixels2 = projection(coords2);
@@ -69,6 +70,26 @@ function calculateMPR(coords1, coords2) {
 	//console.log(mileDistance + " = distance in miles");
 
 	return (pixelDistance / mileDistance);
+}*/
+
+// Calculates the mile to pixel ratio used in adjusting the city radius
+// (Takes in 2 arrays of longitude and latitude for two data points)
+function calculateMPR(coords1, coords2) {
+	// get corresponding pixel values of coordinates
+	var pixels1 = projection(coords1),
+		pixels2 = projection(coords2);
+
+	// get distance between two points in pixels
+	var pixelX = pixels1[0] - pixels2[0];
+	var pixelY = pixels1[1] - pixels2[1];
+	var pixelDistance = Math.sqrt((pixelX * pixelX) + (pixelY * pixelY));
+	//console.log(pixelDistance);
+
+	// coords array are [lon, lat] while distance functions takes lat then long
+	var mileDistance = d3.geo.distance(coords1, coords2) * EARTH_RADIUS;
+	//console.log(mileDistance + " = distance in miles");
+
+	return (pixelDistance / mileDistance);
 }
 
 
@@ -76,7 +97,6 @@ function calculateMPR(coords1, coords2) {
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
 
-	// calculate mile-to-pixel ratio
 	mileToPixelRatio = calculateMPR(crimes.data[0].Location, crimes.data[crimes.data.length/2].Location);
 
 	drawCityPins(200, 375, 450, 375, crimes.data); //default pin locations
@@ -110,12 +130,12 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
 		    	// update the point A in filtering out
 		    	var pointA = projection.invert([parseInt(d3.select("#radiusA").attr("cx")), parseInt(d3.select("#radiusA").attr("cy"))]);
 		    	filters[INTERSECTION_FILTER].A = pointA;
-		    	update(filterCrimes(crimes));
+		    	//update(filterCrimes(crimes));
 		    } else {
 		    	cityRad = d3.select("#radiusB");
 		    	var pointB = projection.invert([parseInt(d3.select("#radiusB").attr("cx")), parseInt(d3.select("#radiusB").attr("cy"))]);
 		    	filters[INTERSECTION_FILTER].B = pointB;
-		    	update(filterCrimes(crimes));
+		    	//update(filterCrimes(crimes));
 		    }
 		    dragged
 		    	.attr("x", Math.max(radius, Math.min(svgWidth - radius, d3.event.x) - radius))
@@ -125,7 +145,7 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
 		    	.attr("cy", Math.max(parseInt(dragged.attr("y")) + radius, Math.min(svgHeight - radius, d3.event.y)));
 		});
 
-
+	
 	// City A push pin
 	svgContainer.append("image")
 		.attr("x", Ax)
@@ -266,9 +286,10 @@ function setUpControls(crimes) {
 	// Handle Intersection Data
 	var cityA = d3.select("#radiusA"),
 		cityB = d3.select("#radiusB");
+	//converts the pixel coordinates of two locations into lon/lat
 	var pointA = projection.invert([parseInt(cityA.attr("cx")), parseInt(cityA.attr("cy"))]),
 		pointB = projection.invert([parseInt(cityB.attr("cx")), parseInt(cityB.attr("cy"))]);
-
+	//update filter with the two points
 	filters[INTERSECTION_FILTER].A = pointA;
 	filters[INTERSECTION_FILTER].B = pointB;
 
@@ -380,12 +401,8 @@ function filterCrimes(crimes) {
 		}
 
 		//Filter Intersection
-		var distFromA = distance(filters[INTERSECTION_FILTER].A[1],
-								 filters[INTERSECTION_FILTER].A[0],
-								 value.Location[1], value.Location[0], "M"),
-			distFromB = distance(filters[INTERSECTION_FILTER].B[1],
-								 filters[INTERSECTION_FILTER].B[0],
-								 value.Location[1], value.Location[0], "M");
+		var distFromA = d3.geo.distance(value.Location, filters[INTERSECTION_FILTER].A) * EARTH_RADIUS,
+			distFromB = d3.geo.distance(value.Location, filters[INTERSECTION_FILTER].B) * EARTH_RADIUS;
 		var radA = d3.select("#radiusA").attr("rx") / mileToPixelRatio,
 			radB = d3.select("#radiusB").attr("rx") / mileToPixelRatio;
 		// if it's not in A or not in B return false
@@ -444,8 +461,6 @@ function update(crimes) {
 		})
 
 		.style("fill", "#8C1717")
-		//.style("stroke", "#999")
-		//.style("stroke-width", "0.25");
 
 
 	circles.exit().remove();
