@@ -23,12 +23,12 @@ var colorA = "#7BCC70",
 	 .style("opacity", 0);
 
 // Global Filters Array
-var filters = [[],{}];
+var filters = [[],{},{}];
 
 // Indexes of Different Filters
 const WEEKDAY_FILTER = 0;
-const DATERANGE_FILTER =1;
-
+const DATERANGE_FILTER = 1;
+const INTERSECTION_FILTER = 2;
 /* ============= END GLOBAL VARIABLE DEFINITIONS ============== */
 
 
@@ -256,6 +256,8 @@ function setUpControls(crimes) {
 		filters[DATERANGE_FILTER].max = tempmax;
 		update(filterCrimes(crimes));
 	});
+
+	var s = $("#ex2").slider();
 
 	//Initialize visual
 	update(crimes);
