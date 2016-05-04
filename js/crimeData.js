@@ -31,25 +31,25 @@ const CATEGORY_FILTER = 4;
 
 
 
-	/*
-	 * SOURCE FOR THIS FUNCTION USED
-	 * https://www.geodatasource.com/developers/javascript
-	 * ====================================================
-	 * get distance between two points in miles
-	 */
-	function distance(lat1, lon1, lat2, lon2, unit) {
-		var radlat1 = Math.PI * lat1/180;
-		var radlat2 = Math.PI * lat2/180;
-		var theta = lon1-lon2;
-		var radtheta = Math.PI * theta/180;
-		var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-		dist = Math.acos(dist);
-		dist = dist * 180/Math.PI;
-		dist = dist * 60 * 1.1515;
-		if (unit=="K") { dist = dist * 1.609344; }
-		if (unit=="N") { dist = dist * 0.8684; }
-		return dist;
-	}
+/*
+ * SOURCE FOR THIS FUNCTION USED
+ * https://www.geodatasource.com/developers/javascript
+ * ====================================================
+ * get distance between two points in miles
+ */
+function distance(lat1, lon1, lat2, lon2, unit) {
+	var radlat1 = Math.PI * lat1/180;
+	var radlat2 = Math.PI * lat2/180;
+	var theta = lon1-lon2;
+	var radtheta = Math.PI * theta/180;
+	var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+	dist = Math.acos(dist);
+	dist = dist * 180/Math.PI;
+	dist = dist * 60 * 1.1515;
+	if (unit=="K") { dist = dist * 1.609344; }
+	if (unit=="N") { dist = dist * 0.8684; }
+	return dist;
+}
 
 // Calculates the mile to pixel ratio used in adjusting the city radius
 // (Takes in 2 arrays of longitude and latitude for two data points)
@@ -234,8 +234,7 @@ function setUpControls(crimes) {
 		console.log(day);
 		if (this.checked) {
 			var i = filters[WEEKDAY_FILTER].indexOf(day);
-			console.log(i);
-			if(i !== -1) {
+			if(i != -1) {
 				filters[WEEKDAY_FILTER].splice(i, 1);
 			}
 		} else {
@@ -335,10 +334,11 @@ function setUpDatePicker(crimes) {
 	});
 }
 
-
+// stacy is the best
 
 // Filters crimes based on Weekday, Date range, and intersection
 function filterCrimes(crimes) {
+	console.log(filters);
 	var curr_crimes = crimes.filter(function(value) {
 
 		//Filter Days of Week
@@ -421,7 +421,7 @@ function update(crimes) {
             div.transition()
                 .duration(200)
 				.style("opacity", 0.9);
-            div.html(d.Category + "<br/>Resolution: " + d.Resolution)
+            div.html(d.Category + "<br/>Resolution: " + d.Resolution + "<br/>" + d.DayOfWeek)
                 .style("left", (d3.event.pageX - 60) + "px")
                 .style("top", (d3.event.pageY - 70) + "px");
             })
