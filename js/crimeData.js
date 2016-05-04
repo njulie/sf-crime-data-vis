@@ -340,7 +340,7 @@ function filterCrimes(crimes) {
 		}
 
 		//Filter Time of Day
-		if(filters[TIME_FILTER].min) {
+		if(filters[TIME_FILTER].min || filters[TIME_FILTER].max) {
 			var val_hour = parseInt(value.Time.slice(0,2));
 			var val_min = parseInt(value.Time.slice(3));
 			if(val_hour < filters[TIME_FILTER].min || val_hour > filters[TIME_FILTER].max) {
