@@ -4,8 +4,8 @@ header {
 }
 
 .filtersection {
-    padding-top: 30px;
-    padding-bottom: 30px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 div.tooltip {
@@ -18,4 +18,18 @@ div.tooltip {
     color: #fff;
     border-radius: 2px;
     pointer-events: none;
+}
+
+.horizontal-padding-right {
+    padding-right: 6px;
+}
+
+.horizontal-padding-left {
+    padding-left: 8px;
+}
+
+.scrollable-menu {
+    height: auto;
+    max-height: 200px;
+    overflow-x: hidden;
 }

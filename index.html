@@ -77,7 +77,56 @@
 							</div>
 						</div>
 						<div class="timerangecontroller filtersection">
-							<b></b> <input id="ex2" type="text" class="span2" value="" data-slider-min="10" data-slider-max="1000" data-slider-step="5" data-slider-value="[250,450]"/> <b></b>
+							<h4>Time of Day Range</h4>
+							<b class="horizontal-padding-right">12:00 AM</b> <input id="time-slider" type="text" data-slider-min="0" data-slider-max="24" data-slider-step="1" data-slider-value="[0,24]" data-slider-handle="square"/> <b class="horizontal-padding-left">11:59PM</b>
+							<br />
+							<label id="timerangelabel">12:00 AM to 11:59 PM</label>
+						</div>
+						<div class="categorycontroller filtersection">
+							<h4>Crime Categories</h4>
+							<div class="dropdown text-left">
+							  <button class="btn btn-default dropdown-toggle" type="button" id="categoryButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							    Select Category: All Crimes
+							    <span class="caret"></span>
+							  </button>
+							  <ul class="dropdown-menu scrollable-menu" role="menu">
+								<li><a href="#">All Crimes</a></li>
+							    <li role="separator" class="divider"></li>
+							    <li><a href="#">Arson</a></li>
+							    <li><a href="#">Assault</a></li>
+								<li><a href="#">Bribery</a></li>
+								<li><a href="#">Burglary</a></li>
+								<li><a href="#">Driving Under the Influence</a></li>
+								<li><a href="#">Drug/Narcotic</a></li>
+								<li><a href="#">Drunkenness</a></li>
+								<li><a href="#">Embezzlement</a></li>
+								<li><a href="#">Extortion</a></li>
+								<li><a href="#">Family Offenses</a></li>
+								<li><a href="#">Forgery/Counterfeiting</a></li>
+								<li><a href="#">Fraud</a></li>
+								<li><a href="#">Gambling</a></li>
+								<li><a href="#">Kidnapping</a></li>
+								<li><a href="#">Larceny/Theft</a></li>
+								<li><a href="#">Liquor Laws</a></li>
+								<li><a href="#">Loitering</a></li>
+								<li><a href="#">Missing Person</a></li>
+								<li><a href="#">Non-Criminal</a></li>
+								<li><a href="#">Other Offenses</a></li>
+								<li><a href="#">Prostitution</a></li>
+								<li><a href="#">Robbery</a></li>
+								<li><a href="#">Runaway</a></li>
+								<li><a href="#">Secondary Codes</a></li>
+								<li><a href="#">Sex Offenses</a></li>
+								<li><a href="#">Stolen Property</a></li>
+								<li><a href="#">Suicide</a></li>
+								<li><a href="#">Suspicious Occ</a></li>
+								<li><a href="#">Trespass</a></li>
+								<li><a href="#">Vandalism</a></li>
+								<li><a href="#">Vehicle Theft</a></li>
+								<li><a href="#">Warrants</a></li>
+								<li><a href="#">Weapon Laws</a></li>
+							  </ul>
+							</div>
 						</div>
 					</div>
 					<div class="col-lg-8" id="map-container">
