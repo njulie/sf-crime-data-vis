@@ -5,7 +5,7 @@
 // get the svg map
 var svgContainer = d3.select("svg");
 
-const pinSize = 60, // width and height of map pins
+const pinSize = 40, // width and height of map pins
 	defaultRadius = 100; // default city radius in pixels (must be in miles)
 
 var mileToPixelRatio = 0; // how many pixels are in a mile
@@ -69,6 +69,7 @@ function calculateMPR(coords1, coords2) {
 
 	// coords array are [lon, lat] while distance functions takes lat then long
 	var mileDistance = distance(coords1[1], coords1[0], coords2[1], coords2[0], "M");
+	//var mileDistance = d3.geo.distance(coords1, coords2);
 	//console.log(mileDistance + " = distance in miles");
 
 	return (pixelDistance / mileDistance);
@@ -81,7 +82,7 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 
 	// calculate mile-to-pixel ratio
 	mileToPixelRatio = calculateMPR(crimes.data[0].Location, crimes.data[crimes.data.length/2].Location);
-	console.log(mileToPixelRatio + " pixels per mile!!!");
+	//console.log(mileToPixelRatio + " pixels per mile!!!");
 
 	drawCityPins(200, 375, 450, 375); //default pin locations
 	update(crimes.data);
@@ -113,8 +114,11 @@ function mover(d) {
     	.attr("cy", Math.max(parseInt(dragged.attr("y")) + radius, Math.min(svgHeight - radius, d3.event.y)));
 
     // ^^ may have to examine d3.mouse(container) for chrome..? perhaps. Idk yet
-}
 
+
+    // update the intersection - filter out the data points to reflect the changing radii
+    
+}
 
 // Draw the city pins and make them draggable!
 function drawCityPins(Ax, Ay, Bx, By) {
@@ -131,7 +135,7 @@ function drawCityPins(Ax, Ay, Bx, By) {
   		.attr("xlink:href", "assets/citymarker.png")
   		.attr("class", "cityPins")
   		.attr("id", "cityA")
-		.style("opacity", "0.87")
+		.style("opacity", "0.9")
 		.call(drag);
 
 	// City B push pin
@@ -143,7 +147,7 @@ function drawCityPins(Ax, Ay, Bx, By) {
 		.attr("xlink:href", "assets/citymarker.png")
 		.attr("class", "cityPins")
 		.attr("id", "cityB")
-		.style("opacity", "0.87")
+		.style("opacity", "0.9")
 		.call(drag);
 
 	// Draw radius around pin A
@@ -168,7 +172,6 @@ function drawCityPins(Ax, Ay, Bx, By) {
 		.style("opacity", "0.35")
 		.style("fill", colorB);
 }
-
 
 // Redraw pins over the data points after every update
 function redrawCityPins(d) {
@@ -313,7 +316,7 @@ function update(crimes) {
 	circles.enter().append("circle").attr("class","enter")
 		.attr("cx", function (d) { return projection(d.Location)[0]; })
 		.attr("cy", function (d) { return projection(d.Location)[1]; })
-		.attr("r", 1.75)
+		.attr("r", 2)
 
 		.on("mouseover", function(d) {
 			this.setAttribute('r', 10);
