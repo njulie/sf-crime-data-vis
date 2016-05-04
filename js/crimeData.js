@@ -269,7 +269,9 @@ function setUpControls(crimes) {
 
 
 	// Handle Time of Day Slider
-	var s = $("#ex2").slider();
+	$("#time-slider .slider-handle")
+		.css("background-color", "#555")
+		.css("background-image", "none");
 
 	$("#time-slider").slider({
 		formatter: function(value) {
@@ -283,6 +285,7 @@ function setUpControls(crimes) {
 		update(filterCrimes(crimes));
 	});
 
+	// Handle Crime Categories
 	$('.dropdown-menu').on("click", function(event) {
 		event.preventDefault();
 		var text = event.target.text;
