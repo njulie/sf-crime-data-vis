@@ -99,7 +99,7 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 
 	mileToPixelRatio = calculateMPR(crimes.data[0].Location, crimes.data[crimes.data.length/2].Location);
 
-	drawCityPins(200, 375, 450, 375, crimes.data); //default pin locations
+	pinsAndRadii(200, 375, 450, 375, defaultRadius, defaultRadius, crimes.data); //default pin locations
 	setUpControls(crimes.data);
 });
 
@@ -108,43 +108,64 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 /* ================ START CITY PIN DRAGGABLE FUNCTIONALITY =============== */
 
 // Draw the city pins and make them draggable!
-function drawCityPins(Ax, Ay, Bx, By, crimes) {
+function pinsAndRadii(Ax, Ay, Bx, By, radA, radB, crimes) {
+
+	// Draw radius around pin A
+	svgContainer.append("ellipse")
+		.attr("cx", Ax + (pinSize / 2))
+		.attr("cy", Ay + (pinSize / 2))
+		.attr("rx", defaultRadius)
+		.attr("ry", defaultRadius)
+		.attr("class", "cityRadius")
+		.attr("id", "radiusA")
+		.style("opacity", "0.2")
+		.style("fill", colorA);
+
+	// Draw radius around pin B
+	svgContainer.append("ellipse")
+		.attr("cx", Bx + (pinSize / 2))
+		.attr("cy", By + (pinSize / 2))
+		.attr("rx", defaultRadius)
+		.attr("ry", defaultRadius)
+		.attr("class", "cityRadius")
+		.attr("id", "radiusB")
+		.style("opacity", "0.35")
+		.style("fill", colorB);
+
 
 	var drag = d3.behavior.drag()
 		.on("dragstart", function() {
   			d3.event.sourceEvent.stopPropagation(); // silence other listeners
 		})
-		//.on("drag", function() { mover(crimes); });
-		//.on("drag", mover);
 		.on("drag", function() {
 			var dragged = d3.select(this);
-			console.log(dragged);
+			//console.log(dragged);
 			var radius = pinSize / 2;
+			// gets the width and height of svg map container so pins will be bounded by edges
 			var svgWidth = parseInt(svgContainer.attr("width")),
 				svgHeight = parseInt(svgContainer.attr("height"));
 
 		    // drag city radius with the pin as well
-		    var cityRad;
+		    var cityRadius;
 		    if (dragged.attr("id") == "cityA") {
-		    	cityRad = d3.select("#radiusA");
-		    	// update the point A in filtering out
-		    	var pointA = projection.invert([parseInt(d3.select("#radiusA").attr("cx")), parseInt(d3.select("#radiusA").attr("cy"))]);
-		    	filters[INTERSECTION_FILTER].A = pointA;
-		    	//update(filterCrimes(crimes));
+		    	cityRadius = d3.select("#radiusA");
 		    } else {
-		    	cityRad = d3.select("#radiusB");
-		    	var pointB = projection.invert([parseInt(d3.select("#radiusB").attr("cx")), parseInt(d3.select("#radiusB").attr("cy"))]);
-		    	filters[INTERSECTION_FILTER].B = pointB;
-		    	//update(filterCrimes(crimes));
+		    	cityRadius = d3.select("#radiusB");
 		    }
 		    dragged
 		    	.attr("x", Math.max(radius, Math.min(svgWidth - radius, d3.event.x) - radius))
 		    	.attr("y", Math.max(radius, Math.min(svgHeight - radius, d3.event.y) - radius));
-		    cityRad
+		    cityRadius
 		    	.attr("cx", Math.max(parseInt(dragged.attr("x")) + radius, Math.min(svgWidth - radius, d3.event.x)))
 		    	.attr("cy", Math.max(parseInt(dragged.attr("y")) + radius, Math.min(svgHeight - radius, d3.event.y)));
+		})
+		.on("dragend", function() {
+		    var pointA = projection.invert([parseInt(d3.select("#radiusA").attr("cx")), parseInt(d3.select("#radiusA").attr("cy"))]);
+		    filters[INTERSECTION_FILTER].A = pointA;
+			var pointB = projection.invert([parseInt(d3.select("#radiusB").attr("cx")), parseInt(d3.select("#radiusB").attr("cy"))]);
+		    filters[INTERSECTION_FILTER].B = pointB;
+		    update(filterCrimes(crimes));
 		});
-
 	
 	// City A push pin
 	svgContainer.append("image")
@@ -169,28 +190,6 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
 		.attr("id", "cityB")
 		.style("opacity", "0.9")
 		.call(drag);
-
-	// Draw radius around pin A
-	svgContainer.append("ellipse")
-		.attr("cx", Ax + (pinSize / 2))
-		.attr("cy", Ay + (pinSize / 2))
-		.attr("rx", defaultRadius)
-		.attr("ry", defaultRadius)
-		.attr("class", "cityRadius")
-		.attr("id", "radiusA")
-		.style("opacity", "0.2")
-		.style("fill", colorA);
-
-	// Draw radius around pin B
-	svgContainer.append("ellipse")
-		.attr("cx", Bx + (pinSize / 2))
-		.attr("cy", By + (pinSize / 2))
-		.attr("rx", defaultRadius)
-		.attr("ry", defaultRadius)
-		.attr("class", "cityRadius")
-		.attr("id", "radiusB")
-		.style("opacity", "0.35")
-		.style("fill", colorB);
 }
 
 // Redraw pins over the data points after every update
@@ -465,7 +464,7 @@ function update(crimes) {
 
 	circles.exit().remove();
 
-	redrawCityPins(crimes); // redraw the city pins
+	//redrawCityPins(crimes); // redraw the city pins
 }
 
 })();
