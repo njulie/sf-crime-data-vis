@@ -193,7 +193,7 @@ function pinsAndRadii(Ax, Ay, Bx, By, radA, radB, crimes) {
 }
 
 // Redraw pins over the data points after every update
-function redrawCityPins(crimes) {
+/*function redrawCityPins(crimes) {
 	if (svgContainer.selectAll(".cityPins")) {
 		var Ax = d3.select("#cityA").attr("x"),
 			Ay = d3.select("#cityA").attr("y"),
@@ -203,7 +203,7 @@ function redrawCityPins(crimes) {
 		svgContainer.selectAll(".cityPins").remove();
 		drawCityPins(Ax, Ay, Bx, By, crimes);
 	}
-}
+}*/
 /* ============== END CITY PIN DRAGGABLE FUNCTIONALITY =============== */
 
 
@@ -447,9 +447,6 @@ function update(crimes) {
 		.on("mouseover", function(d) {
 			this.setAttribute('r', 10);
 			this.setAttribute("style", "fill: #F57C00");
-            div.transition()
-                .duration(200)
-				.style("opacity", 0.9);
             div.html(d.Category + "<br/>Resolution: " + d.Resolution + "<br/>" + d.DayOfWeek)
                 .style("left", (d3.event.pageX - 60) + "px")
                 .style("top", (d3.event.pageY - 70) + "px");
@@ -457,9 +454,6 @@ function update(crimes) {
         .on("mouseout", function(d) {
 			this.setAttribute('r', 2);
 			this.setAttribute("style", "fill: #8C1717");
-            div.transition()
-                .duration(500)
-                .style("opacity", 0);
         })
 		.on("mouseenter", function(d) {
 			this.parentElement.appendChild(this);
