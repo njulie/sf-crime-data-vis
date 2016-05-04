@@ -23,12 +23,13 @@ var colorA = "#7BCC70",
 	 .style("opacity", 0);
 
 // Global Filters Array
-var filters = [[],{},{}];
+var filters = [[],{},{},{}];
 
 // Indexes of Different Filters
 const WEEKDAY_FILTER = 0;
 const DATERANGE_FILTER = 1;
 const INTERSECTION_FILTER = 2;
+const TIME_FILTER = 3;
 /* ============= END GLOBAL VARIABLE DEFINITIONS ============== */
 
 
@@ -257,12 +258,36 @@ function setUpControls(crimes) {
 		update(filterCrimes(crimes));
 	});
 
-	var s = $("#ex2").slider();
+	$("#time-slider").slider({
+		formatter: function(value) {
+			// Update tooltip
+			return getConvertedTime(value[0]) + " to " + getConvertedTime(value[1]);
+		}
+	}).on("slide", function(event) {
+		filters[TIME_FILTER].min = event.value[0];
+		filters[TIME_FILTER].max = event.value[1];
+		update(filterCrimes(crimes));
+	});
 
 	//Initialize visual
 	update(crimes);
 }
 
+function getConvertedTime(value) {
+	var convertedtime;
+	if(value === 0) {
+		convertedtime = "12:00 AM";
+	} else if(value < 12) {
+		convertedtime = value + ":00 AM";
+	} else if(value === 12) {
+		convertedtime = "12:00 PM";
+	} else if(value === 24) {
+		convertedtime = "11:59 PM";
+	} else {
+		convertedtime = value%12 + ":00 PM";
+	}
+	return convertedtime;
+}
 
 
 function setUpDatePicker(crimes) {
@@ -297,6 +322,14 @@ function filterCrimes(crimes) {
 		var val_date = new Date(value.Date);
 		val_date.setDate(val_date.getDate()+1);
 		if(val_date < filters[DATERANGE_FILTER].min || val_date >= filters[DATERANGE_FILTER].max) {
+			return false;
+		}
+		//Filter Time of Day
+		var val_hour = parseInt(value.Time.slice(0,2));
+		var val_min = parseInt(value.Time.slice(3));
+		if(val_hour < filters[TIME_FILTER].min || val_hour > filters[TIME_FILTER].max) {
+			return false;
+		} else if(val_hour == filters[TIME_FILTER].max && val_min > 0) {
 			return false;
 		}
 		return true;
@@ -339,19 +372,7 @@ function update(crimes) {
 		.on("mouseenter", function(d) {
 			this.parentElement.appendChild(this);
 		})
-
-		// Set Color Attributes by Time of Day
-		.style("fill", "#555"/*function(d) {
-			//Get hour
-			var hour = parseInt(d.Time.split(":")[0]);
-			if(hour > 4 && hour <= 12) {
-				return color("morning");
-			} else if (hour > 12 && hour <= 20) {
-				return color("afternoon");
-			} else {
-				return color("evening");
-			}
-		}*/);
+		.style("fill", "#555");
 
 
 	circles.exit().remove();

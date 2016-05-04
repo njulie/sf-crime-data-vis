@@ -77,7 +77,13 @@
 							</div>
 						</div>
 						<div class="timerangecontroller filtersection">
-							<b></b> <input id="ex2" type="text" class="span2" value="" data-slider-min="10" data-slider-max="1000" data-slider-step="5" data-slider-value="[250,450]"/> <b></b>
+							<h4>Time of Day Range</h4>
+							<b class="horizontal-padding-right">12:00 AM</b> <input id="time-slider" type="text" data-slider-min="0" data-slider-max="24" data-slider-step="1" data-slider-value="[0,24]" data-slider-handle="square"/> <b class="horizontal-padding-left">11:59PM</b>
+							<br />
+							<label id="timerangelabel">12:00 AM to 11:59 PM</label>
+						</div>
+						<div class="categorycontroller filtersection">
+							<h4>Crime Categories</h4>
 						</div>
 					</div>
 					<div class="col-lg-8" id="map-container">
