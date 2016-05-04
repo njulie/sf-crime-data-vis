@@ -103,45 +103,28 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
 			var svgWidth = parseInt(svgContainer.attr("width")),
 				svgHeight = parseInt(svgContainer.attr("height"));
 
-			dragged
-		    	.attr("x", Math.max(radius, Math.min(svgWidth - radius, d3.event.x) - radius))
-		    	.attr("y", Math.max(radius, Math.min(svgHeight - radius, d3.event.y) - radius));
-
-
 		    // drag city radius with the pin as well
 		    var cityRad;
-		    if (dragged.attr("id") == "cityA") cityRad = d3.select("#radiusA");
-		    else cityRad = d3.select("#radiusB");
+		    if (dragged.attr("id") == "cityA") {
+		    	cityRad = d3.select("#radiusA");
+		    	// update the point A in filtering out
+		    	var pointA = projection.invert([parseInt(d3.select("#radiusA").attr("cx")), parseInt(d3.select("#radiusA").attr("cy"))]);
+		    	filters[INTERSECTION_FILTER].A = pointA;
+		    	update(filterCrimes(crimes));
+		    } else {
+		    	cityRad = d3.select("#radiusB");
+		    	var pointB = projection.invert([parseInt(d3.select("#radiusB").attr("cx")), parseInt(d3.select("#radiusB").attr("cy"))]);
+		    	filters[INTERSECTION_FILTER].B = pointB;
+		    	update(filterCrimes(crimes));
+		    }
+		    dragged
+		    	.attr("x", Math.max(radius, Math.min(svgWidth - radius, d3.event.x) - radius))
+		    	.attr("y", Math.max(radius, Math.min(svgHeight - radius, d3.event.y) - radius));
 		    cityRad
 		    	.attr("cx", Math.max(parseInt(dragged.attr("x")) + radius, Math.min(svgWidth - radius, d3.event.x)))
 		    	.attr("cy", Math.max(parseInt(dragged.attr("y")) + radius, Math.min(svgHeight - radius, d3.event.y)));
-
-		    //update(filterCrimes(crimes));
 		});
 
-	// Reposition the city pins when dragged
-	function mover(crimes) {
-		/*var dragged = d3.select(this);
-		console.log(dragged);
-		var radius = pinSize / 2;
-		var svgWidth = parseInt(svgContainer.attr("width")),
-			svgHeight = parseInt(svgContainer.attr("height"));
-
-		dragged
-	    	.attr("x", Math.max(radius, Math.min(svgWidth - radius, d3.event.x) - radius))
-	    	.attr("y", Math.max(radius, Math.min(svgHeight - radius, d3.event.y) - radius));
-
-
-	    // drag city radius with the pin as well
-	    var cityRad;
-	    if (dragged.attr("id") == "cityA") cityRad = d3.select("#radiusA");
-	    else cityRad = d3.select("#radiusB");
-	    cityRad
-	    	.attr("cx", Math.max(parseInt(dragged.attr("x")) + radius, Math.min(svgWidth - radius, d3.event.x)))
-	    	.attr("cy", Math.max(parseInt(dragged.attr("y")) + radius, Math.min(svgHeight - radius, d3.event.y)));*/
-
-	    //update(filterCrimes(crimes));
-	}
 
 	// City A push pin
 	svgContainer.append("image")
@@ -230,8 +213,6 @@ sliderB.on("slide", function(slideEvt) {
 		.attr("ry", slideEvt.value);
 });
 
-// Styling slider handles
-//$(".slider-handle").css("border-radius", "2px");
 
 // Changing colors of the slider knobs to match the cities
 $("#Aknob .slider-handle")
@@ -249,6 +230,7 @@ $("#Bknob .slider-selection")
 	.css("background-image", "none");
 
 /* ============ END CITY RADIUS FUNCTIONALITY ================*/
+
 
 
 
@@ -371,7 +353,7 @@ function setUpDatePicker(crimes) {
 
 // Filters crimes based on Weekday, Date range, and intersection
 function filterCrimes(crimes) {
-	console.log(filters);
+	//console.log(filters);
 	var curr_crimes = crimes.filter(function(value) {
 
 		//Filter Days of Week
@@ -404,10 +386,10 @@ function filterCrimes(crimes) {
 			distFromB = distance(filters[INTERSECTION_FILTER].B[1],
 								 filters[INTERSECTION_FILTER].B[0],
 								 value.Location[1], value.Location[0], "M");
-		var maxAdist = d3.select("#radiusA").attr("rx"),
-			maxBdist = d3.select("#radiusB").attr("rx");
-		// distA has to be less than radius of A AND distB has to be less than radius B to be in intersection
-		if (distFromA * mileToPixelRatio > maxAdist || distFromB * mileToPixelRatio > maxBdist) {
+		var radA = d3.select("#radiusA").attr("rx") / mileToPixelRatio,
+			radB = d3.select("#radiusB").attr("rx") / mileToPixelRatio;
+		// if it's not in A or not in B return false
+		if (distFromA >= radA || distFromB >= radB) {
 			return false;
 		}
 
