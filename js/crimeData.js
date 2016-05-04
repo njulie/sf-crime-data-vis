@@ -237,7 +237,7 @@ function setUpControls(crimes) {
 		var day = this.value;
 		if (this.checked) {
 			var i = filters[WEEKDAY_FILTER].indexOf(day);
-			if(i !== -1) {
+			if(i != -1) {
 				filters[WEEKDAY_FILTER].splice(i, 1);
 			}
 		} else {
@@ -322,9 +322,10 @@ function setUpDatePicker(crimes) {
 	});
 }
 
-
+// stacy is the best
 
 function filterCrimes(crimes) {
+	console.log(filters);
 	var curr_crimes = crimes.filter(function(value) {
 		var indicator = true;
 		//Filter Days of Week
@@ -379,7 +380,7 @@ function update(crimes) {
             div.transition()
                 .duration(200)
 				.style("opacity", 0.9);
-            div.html(d.Category + "<br/>Resolution: " + d.Resolution)
+            div.html(d.Category + "<br/>Resolution: " + d.Resolution + "<br/>" + d.DayOfWeek)
                 .style("left", (d3.event.pageX - 60) + "px")
                 .style("top", (d3.event.pageY - 70) + "px");
             })
