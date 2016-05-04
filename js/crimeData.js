@@ -6,7 +6,7 @@
 var svgContainer = d3.select("svg");
 
 const pinSize = 26, // width and height of map pins
-	defaultRadius = 175; // default city radius in pixels (must be in miles)
+	defaultRadius = 175; // default city radius in pixels
 
 var mileToPixelRatio = 0; // how many pixels are in a mile
 
@@ -28,8 +28,10 @@ const INTERSECTION_FILTER = 2;
 const TIME_FILTER = 3;
 const CATEGORY_FILTER = 4;
 
-filters[INTERSECTION_FILTER].cityA = [-122.433701, 37.787683];
-filters[INTERSECTION_FILTER].cityB = [-122.433701, 37.767683];
+filters[INTERSECTION_FILTER].cityA = projection.invert([200,375]);
+filters[INTERSECTION_FILTER].cityAradius = defaultRadius;
+filters[INTERSECTION_FILTER].cityB =  projection.invert([450,375]);
+filters[INTERSECTION_FILTER].cityBradius = defaultRadius;
 /* ============= END GLOBAL VARIABLE DEFINITIONS ============== */
 
 // Load data, setup controls
@@ -73,8 +75,6 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
 				.attr("cx", Math.max(parseInt(dragged.attr("x")) + radius, Math.min(svgWidth - radius, d3.event.x)))
 				.attr("cy", Math.max(parseInt(dragged.attr("y")) + radius, Math.min(svgHeight - radius, d3.event.y)));
 
-
-
 			update(filterCrimes(crimes));
 		})
 		.on("dragend", function() {
@@ -114,6 +114,7 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
   		.attr("id", "cityA")
 		.style("opacity", "0.9")
 		.call(drag);
+	filters[INTERSECTION_FILTER].cityA = projection.invert([Ax,Ay]);
 
 	// City B push pin
 	svgContainer.append("image")
@@ -126,7 +127,7 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
 		.attr("id", "cityB")
 		.style("opacity", "0.9")
 		.call(drag);
-
+	filters[INTERSECTION_FILTER].cityA = projection.invert([Bx,By]);
 
 }
 
@@ -135,46 +136,7 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
 
 
 
-/* ============ START CITY RADIUS FUNCTIONALITY =============== */
 
-// Initialize sliders
-var sliderA = $("#sliderA"),
-	sliderB = $("#sliderB");
-
-// Make sliders slide and control radii of cities
-sliderA.slider();
-sliderA.on("slide", function(slideEvt) {
-	$("#sliderAVal").text(Math.round((slideEvt.value / mileToPixelRatio) * 10) / 10); //display radius in miles
-	d3.select("#radiusA")
-		.attr("rx", slideEvt.value)
-		.attr("ry", slideEvt.value);
-});
-
-sliderB.slider();
-sliderB.on("slide", function(slideEvt) {
-	$("#sliderBVal").text(Math.round((slideEvt.value / mileToPixelRatio) * 10) / 10); //display radius in miles
-	d3.select("#radiusB")
-		.attr("rx", slideEvt.value)
-		.attr("ry", slideEvt.value);
-});
-
-// Styling slider handles
-//$(".slider-handle").css("border-radius", "2px");
-
-// Changing colors of the slider knobs to match the cities
-$("#Aknob .slider-handle")
-	.css("background-color", colorA)
-	.css("background-image", "none");
-$("#Bknob .slider-handle")
-	.css("background-color", colorB)
-	.css("background-image", "none");
-
-$("#Aknob .slider-selection")
-	.css("background-color", "#ccc")
-	.css("background-image", "none");
-$("#Bknob .slider-selection")
-	.css("background-color", "#ccc")
-	.css("background-image", "none");
 
 /* ============ END CITY RADIUS FUNCTIONALITY ================*/
 
@@ -256,6 +218,45 @@ function setUpControls(crimes) {
 		}
 	});
 
+	// Initialize sliders
+	var sliderA = $("#sliderA"),
+		sliderB = $("#sliderB");
+
+	// Make sliders slide and control radii of cities
+	sliderA.slider();
+	sliderA.on("slide", function(slideEvt) {
+		$("#sliderAVal").text(Math.round((slideEvt.value / mileToPixelRatio) * 10) / 10); //display radius in miles
+		d3.select("#radiusA")
+			.attr("rx", slideEvt.value)
+			.attr("ry", slideEvt.value);
+		filters[INTERSECTION_FILTER].cityAradius = slideEvt.value;
+		update(filterCrimes(crimes));
+	});
+
+	sliderB.slider();
+	sliderB.on("slide", function(slideEvt) {
+		$("#sliderBVal").text(Math.round((slideEvt.value / mileToPixelRatio) * 10) / 10); //display radius in miles
+		d3.select("#radiusB")
+			.attr("rx", slideEvt.value)
+			.attr("ry", slideEvt.value);
+		filters[INTERSECTION_FILTER].cityAradius = slideEvt.value;
+		update(filterCrimes(crimes));
+	});
+
+	$("#Aknob .slider-handle")
+		.css("background-color", colorA)
+		.css("background-image", "none");
+	$("#Bknob .slider-handle")
+		.css("background-color", colorB)
+		.css("background-image", "none");
+
+	$("#Aknob .slider-selection")
+		.css("background-color", "#ccc")
+		.css("background-image", "none");
+	$("#Bknob .slider-selection")
+		.css("background-color", "#ccc")
+		.css("background-image", "none");
+
 	//Initialize visual
 	update(filterCrimes(crimes));
 }
@@ -323,8 +324,9 @@ function filterCrimes(crimes) {
 			return false;
 		}
 
-		if(!checkInRadius(value, filters[INTERSECTION_FILTER].cityA, 200) ||
-			!checkInRadius(value, filters[INTERSECTION_FILTER].cityB, 200)) {
+		//Filter Intersection
+		if(!checkInRadius(value, filters[INTERSECTION_FILTER].cityA, filters[INTERSECTION_FILTER].cityAradius) ||
+			!checkInRadius(value, filters[INTERSECTION_FILTER].cityB, filters[INTERSECTION_FILTER].cityBradius)) {
 				return false;
 			}
 
