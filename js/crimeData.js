@@ -9,6 +9,7 @@ const pinSize = 26, // width and height of map pins
 	defaultRadius = 175; // default city radius in pixels
 
 var mileToPixelRatio = 0; // how many pixels are in a mile
+const EARTH_RADIUS = 3959; //radius of earth in miles
 
 const colorA = "#7BCC70",
 	colorB = "#72587F";
@@ -34,9 +35,28 @@ filters[INTERSECTION_FILTER].cityB =  projection.invert([450,375]);
 filters[INTERSECTION_FILTER].cityBradius = defaultRadius;
 /* ============= END GLOBAL VARIABLE DEFINITIONS ============== */
 
+function calculateMPR(coords1, coords2) {
+	// get corresponding pixel values of coordinates
+	var pixels1 = projection(coords1),
+		pixels2 = projection(coords2);
+
+	// get distance between two points in pixels
+	var pixelX = pixels1[0] - pixels2[0];
+	var pixelY = pixels1[1] - pixels2[1];
+	var pixelDistance = Math.sqrt((pixelX * pixelX) + (pixelY * pixelY));
+	//console.log(pixelDistance);
+
+	// coords array are [lon, lat] while distance functions takes lat then long
+	var mileDistance = d3.geo.distance(coords1, coords2) * EARTH_RADIUS;
+	//console.log(mileDistance + " = distance in miles");
+
+	return (pixelDistance / mileDistance);
+}
+
 // Load data, setup controls
 d3.json("scpd-incidents.json", function(error, crimes) {
 	if (error) throw error;
+	mileToPixelRatio = calculateMPR(crimes.data[0].Location, crimes.data[crimes.data.length/2].Location);
 	drawCityPins(200, 375, 450, 375, crimes.data); //default pin locations
 	setUpControls(crimes.data);
 });
@@ -214,7 +234,7 @@ function setUpControls(crimes) {
 	// Make sliders slide and control radii of cities
 	sliderA.slider();
 	sliderA.on("slide", function(slideEvt) {
-		$("#sliderAVal").text(Math.round((slideEvt.value / mileToPixelRatio) * 10) / 10); //display radius in miles
+		$("#sliderAVal")[0].innerHTML = Math.round((slideEvt.value / mileToPixelRatio) * 10) / 10; //display radius in miles
 		d3.select("#radiusA")
 			.attr("rx", slideEvt.value)
 			.attr("ry", slideEvt.value);
