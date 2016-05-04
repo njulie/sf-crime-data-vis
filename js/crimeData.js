@@ -221,6 +221,13 @@ $("#Bknob .slider-handle")
 	.css("background-color", colorB)
 	.css("background-image", "none");
 
+$("#Aknob .slider-selection")
+	.css("background-color", "#ccc")
+	.css("background-image", "none");
+$("#Bknob .slider-selection")
+	.css("background-color", "#ccc")
+	.css("background-image", "none");
+
 /* ============ END CITY RADIUS FUNCTIONALITY ================*/
 
 
@@ -280,6 +287,9 @@ function setUpControls(crimes) {
 		.css("width", "5px")
 		.css("margin-left", "-2px")
 		.css("background-color", "#666")
+		.css("background-image", "none");
+	$("#sliderTime .slider-selection")
+		.css("background-color", "#ccc")
 		.css("background-image", "none");
 
 

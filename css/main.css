@@ -1,36 +1,61 @@
 @import url(https://fonts.googleapis.com/css?family=Titillium+Web:300,400,700|Lato);
 
-h1, h2, h3, h5, h6 {
+h1, h2, h4, h5, h6 {
     font-weight: 700;
 }
 
-h4 {
+h3 {
     font-weight: 400;
+}
+
+hr {
+    border-color: #d8d8d8;
 }
 
 body {
     font-family: 'Titillium Web', sans-serif;
     font-weight: 300;
     letter-spacing:0.5px;
-    background-color: #5f6c7a;
     height: 100%;
     overflow-y: hidden;
 }
 
 .container {
-    padding:0;
+    padding: 0;
+}
+
+#map-container {
+    position: relative;
+}
+
+header {
+    position: absolute;
+    top: 0;
 }
 
 #map-controls {
-    background-color: #fff;
     opacity: 0.9;
     height: 100%;
 }
 
 .filtersection {
     padding-top: 10px;
-    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background-color: #f8f8f8;
 }
+
+.datetimefilter {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
 
 div.tooltip {
     text-align: center;
