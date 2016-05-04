@@ -180,13 +180,7 @@ function setUpControls(crimes) {
 
 
 	// Handle Intersection Data
-	var cityA = d3.select("#radiusA"),
-		cityB = d3.select("#radiusB");
-	var pointA = projection.invert([parseInt(cityA.attr("cx")), parseInt(cityA.attr("cy"))]),
-		pointB = projection.invert([parseInt(cityB.attr("cx")), parseInt(cityB.attr("cy"))]);
-
-	filters[INTERSECTION_FILTER].A = pointA;
-	filters[INTERSECTION_FILTER].B = pointB;
+	
 
 
 	// Handle Time of Day Slider
