@@ -264,6 +264,7 @@ function setUpControls(crimes) {
 			return getConvertedTime(value[0]) + " to " + getConvertedTime(value[1]);
 		}
 	}).on("slide", function(event) {
+		$("#timerangelabel")[0].innerHTML = getConvertedTime(event.value[0]) + " to " + getConvertedTime(event.value[1]);
 		filters[TIME_FILTER].min = event.value[0];
 		filters[TIME_FILTER].max = event.value[1];
 		update(filterCrimes(crimes));
