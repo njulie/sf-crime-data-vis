@@ -3,13 +3,14 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 		<title>CS448B Assignment 3</title>
-		<!-- Custom CSS -->
-	    <link rel="stylesheet" href="css/main.css" type="text/css">
 		<!-- Bootstrap -->
     	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.2/css/bootstrap-slider.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/css/bootstrap-datepicker3.min.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+
+		<!-- Custom CSS -->
+	    <link rel="stylesheet" href="css/main.css" type="text/css">
 	</head>
 
 	<body>
@@ -36,13 +37,13 @@
 							<h5>City Radii</h5>
 							<!-- slider for city A -->
 							<input id="sliderA" type="text" data-slider-id="Aknob" data-slider-min="0" data-slider-max="500" data-slider-step="1" data-slider-value="175" data-slider-tooltip="hide">
-							<span id="sliderALabel">&nbsp; &nbsp; &nbsp;<span id="sliderAVal">2.4</span> miles</span>
+							<span class="horizontal-padding-left" id="sliderALabel"><span id="sliderAVal">2.4</span> miles</span>
 
 							<p><br></p>
 
 							<!-- slider for city B -->
 							<input id="sliderB" type="text" data-slider-id="Bknob" data-slider-min="0" data-slider-max="500" data-slider-step="1" data-slider-value="175" data-slider-tooltip="hide">
-							<span id="sliderBLabel">&nbsp; &nbsp; &nbsp;<span id="sliderBVal">2.4</span> miles</span>
+							<span class="horizontal-padding-left" id="sliderBLabel"><span id="sliderBVal">2.4</span> miles</span>
 						</div>
 
 						<div class="categorycontroller filtersection">
@@ -130,11 +131,9 @@
 						
 						<div class="timerangecontroller filtersection">
 							<h5>Time of Day</h5>
-							<!--<b class="horizontal-padding-right">12:00 AM</b>-->
-							<i class="fa fa-sun-o horizontal-padding-right" style="font-size:2.5em; color:#ffd700; position:relative; top:8px" aria-hidden="true"></i>&nbsp;&nbsp;
+							<i class="fa fa-sun-o horizontal-padding-right" aria-hidden="true"></i>
 							<input id="time-slider" type="text" data-slider-id="sliderTime" data-slider-min="0" data-slider-max="24" data-slider-step="1" data-slider-value="[0,24]" data-slider-handle="square"/>
-							<!--<b class="horizontal-padding-left">11:59PM</b>-->
-							&nbsp;&nbsp;<i class="fa fa-moon-o horizontal-padding-left" style="font-size:2.5em; color:#7f7fbf; position:relative; top:8px" aria-hidden="true"></i>
+							<i class="fa fa-moon-o horizontal-padding-left" aria-hidden="true"></i>
 							<p></p>
 							<label id="timerangelabel">12:00 AM to 11:59 PM</label>
 						</div>
@@ -147,7 +146,7 @@
 	    </section>
 
 		<script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
-		<script   src="https://code.jquery.com/jquery-2.2.3.min.js"   integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="   crossorigin="anonymous"></script>
+		<!--<script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>-->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.2/bootstrap-slider.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/js/bootstrap-datepicker.min.js"></script>
