@@ -291,7 +291,7 @@ function filterCrimes(crimes) {
 		for(var i = 0; i < filters[WEEKDAY_FILTER].length; i++) {
 			if(value.DayOfWeek === filters[WEEKDAY_FILTER][i]) {
 				return false;
-			}
+			} 
 		}
 		//Filter Date Range
 		var val_date = new Date(value.Date);
@@ -317,7 +317,7 @@ function update(crimes) {
 	circles.enter().append("circle").attr("class","enter")
 		.attr("cx", function (d) { return projection(d.Location)[0]; })
 		.attr("cy", function (d) { return projection(d.Location)[1]; })
-		.attr("r", 2)
+		.attr("r", 1.75)
 
 		.on("mouseover", function(d) {
 			this.setAttribute('r', 10);
