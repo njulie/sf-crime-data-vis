@@ -78,10 +78,8 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 
 	// calculate mile-to-pixel ratio
 	mileToPixelRatio = calculateMPR(crimes.data[0].Location, crimes.data[crimes.data.length/2].Location);
-	console.log(mileToPixelRatio + " pixels per mile!!!");
 
 	drawCityPins(200, 375, 450, 375, crimes.data); //default pin locations
-	//update(crimes.data);
 	setUpControls(crimes.data);
 });
 
@@ -96,12 +94,34 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
 		.on("dragstart", function() {
   			d3.event.sourceEvent.stopPropagation(); // silence other listeners
 		})
-		//.on("drag", function() { mover(d, i, crimes); });
-		.on("drag", mover);
+		//.on("drag", function() { mover(crimes); });
+		//.on("drag", mover);
+		.on("drag", function() {
+			var dragged = d3.select(this);
+			console.log(dragged);
+			var radius = pinSize / 2;
+			var svgWidth = parseInt(svgContainer.attr("width")),
+				svgHeight = parseInt(svgContainer.attr("height"));
+
+			dragged
+		    	.attr("x", Math.max(radius, Math.min(svgWidth - radius, d3.event.x) - radius))
+		    	.attr("y", Math.max(radius, Math.min(svgHeight - radius, d3.event.y) - radius));
+
+
+		    // drag city radius with the pin as well
+		    var cityRad;
+		    if (dragged.attr("id") == "cityA") cityRad = d3.select("#radiusA");
+		    else cityRad = d3.select("#radiusB");
+		    cityRad
+		    	.attr("cx", Math.max(parseInt(dragged.attr("x")) + radius, Math.min(svgWidth - radius, d3.event.x)))
+		    	.attr("cy", Math.max(parseInt(dragged.attr("y")) + radius, Math.min(svgHeight - radius, d3.event.y)));
+
+		    //update(filterCrimes(crimes));
+		});
 
 	// Reposition the city pins when dragged
-	function mover(d, i, crimes) {
-		var dragged = d3.select(this);
+	function mover(crimes) {
+		/*var dragged = d3.select(this);
 		console.log(dragged);
 		var radius = pinSize / 2;
 		var svgWidth = parseInt(svgContainer.attr("width")),
@@ -118,7 +138,7 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
 	    else cityRad = d3.select("#radiusB");
 	    cityRad
 	    	.attr("cx", Math.max(parseInt(dragged.attr("x")) + radius, Math.min(svgWidth - radius, d3.event.x)))
-	    	.attr("cy", Math.max(parseInt(dragged.attr("y")) + radius, Math.min(svgHeight - radius, d3.event.y)));
+	    	.attr("cy", Math.max(parseInt(dragged.attr("y")) + radius, Math.min(svgHeight - radius, d3.event.y)));*/
 
 	    //update(filterCrimes(crimes));
 	}
@@ -348,7 +368,6 @@ function setUpDatePicker(crimes) {
 	});
 }
 
-// stacy is the best
 
 // Filters crimes based on Weekday, Date range, and intersection
 function filterCrimes(crimes) {
@@ -419,7 +438,7 @@ function update(crimes) {
 	circles.enter().append("circle").attr("class","enter")
 		.attr("cx", function (d) { return projection(d.Location)[0]; })
 		.attr("cy", function (d) { return projection(d.Location)[1]; })
-		.attr("r", 2.5)
+		.attr("r", 2)
 
 		.on("mouseover", function(d) {
 			this.setAttribute('r', 10);
@@ -443,8 +462,8 @@ function update(crimes) {
 		})
 
 		.style("fill", "#8C1717")
-		.style("stroke", "#999")
-		.style("stroke-width", "0.25");
+		//.style("stroke", "#999")
+		//.style("stroke-width", "0.25");
 
 
 	circles.exit().remove();
