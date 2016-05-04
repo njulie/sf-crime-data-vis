@@ -85,7 +85,7 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 	//console.log(mileToPixelRatio + " pixels per mile!!!");
 
 	drawCityPins(200, 375, 450, 375); //default pin locations
-	update(crimes.data);
+	//update(crimes.data);
 	setUpControls(crimes.data);
 });
 
@@ -117,8 +117,31 @@ function mover(d) {
 
 
     // update the intersection - filter out the data points to reflect the changing radii
+    //update(filterCrimes(crimes));
     
 }
+
+// function that filters crimes based on what is in the intersection
+/*function filteredIntersection(crimes) {
+	var curr_crimes = crimes.filter(function(value) {
+		var indicator = true;
+
+		//Filter by location
+		for (var i = 0; i < filters[INTERSECTION_FILTER].length; i++) {
+			if(value.Location === filters[INTERSECTION_FILTER][i]) {
+				return false;
+			} 
+		}
+		//Filter Date Range
+		var val_date = new Date(value.Date);
+		val_date.setDate(val_date.getDate()+1);
+		if(val_date < filters[DATERANGE_FILTER].min || val_date >= filters[DATERANGE_FILTER].max) {
+			return false;
+		}
+		return true;
+	});
+	return curr_crimes;
+}*/
 
 // Draw the city pins and make them draggable!
 function drawCityPins(Ax, Ay, Bx, By) {
@@ -189,6 +212,7 @@ function redrawCityPins(d) {
 
 
 
+
 /* ============ START CITY RADIUS FUNCTIONALITY =============== */
 
 // Initialize sliders
@@ -234,8 +258,10 @@ function setUpControls(crimes) {
 	// Handle Weekday Checkbox Settings
 	$("#weekdayfilter :input").change(function() {
 		var day = this.value;
+		console.log(day);
 		if (this.checked) {
 			var i = filters[WEEKDAY_FILTER].indexOf(day);
+			console.log(i);
 			if(i !== -1) {
 				filters[WEEKDAY_FILTER].splice(i, 1);
 			}
@@ -255,6 +281,22 @@ function setUpControls(crimes) {
 		filters[DATERANGE_FILTER].max = tempmax;
 		update(filterCrimes(crimes));
 	});
+
+
+	// Handle Intersection Data ===================
+
+	// Get the coordinates of the two map pins
+	var cityA = d3.select("#radiusA"),
+		cityB = d3.select("#radiusB");
+	var pointA = projection.invert([parseInt(cityA.attr("cx")), parseInt(cityA.attr("cy"))]).
+		pointB = projection.invert([parseInt(cityB.attr("cx"), parseInt(cityB.attr("cy")))]);
+	//console.log(pointA);
+	//console.log(pointB);
+
+	
+	
+	// update(filterCrimes(crimes));
+
 
 	var s = $("#ex2").slider();
 
@@ -283,15 +325,18 @@ function setUpDatePicker(crimes) {
 
 
 
+// Filters crimes based on Weekday, Date range, and intersection
 function filterCrimes(crimes) {
 	var curr_crimes = crimes.filter(function(value) {
-		var indicator = true;
+		//var indicator = true;
+
 		//Filter Days of Week
 		for(var i = 0; i < filters[WEEKDAY_FILTER].length; i++) {
 			if(value.DayOfWeek === filters[WEEKDAY_FILTER][i]) {
 				return false;
 			} 
 		}
+
 		//Filter Date Range
 		var val_date = new Date(value.Date);
 		val_date.setDate(val_date.getDate()+1);
@@ -299,7 +344,22 @@ function filterCrimes(crimes) {
 			return false;
 		}
 		return true;
+
+		//Filter Intersection
+
+		// iterate through all the data points and get their coordinates
+	// For each data point, compare the longitude and latitude
+		// compare longitudes (smaller number is left)
+			// if longA < longB, then data x points need to be greater than longA and less than longB
+		// compare latitudes (smaller number is down)
+			// if latA < latB, then data y points need to be greater than latA and less than latB
+		// SO IF dataCoords longitude < smallerLong || data Coords longitude > largerLong
+		//		|| dataCoords latitude < smallerLat || dataCoords latitude > largerLat
+		//			then add to filter[INTERSECTION_FILTER].push()
+
+
 	});
+
 	return curr_crimes;
 }
 
