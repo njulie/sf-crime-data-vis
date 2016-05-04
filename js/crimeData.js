@@ -215,7 +215,7 @@ sliderB.on("slide", function(slideEvt) {
 });
 
 // Styling slider handles
-$(".slider-handle").css("border-radius", "2px");
+//$(".slider-handle").css("border-radius", "2px");
 
 // Changing colors of the slider knobs to match the cities
 $("#Aknob .slider-handle")
@@ -269,10 +269,6 @@ function setUpControls(crimes) {
 
 
 	// Handle Time of Day Slider
-	$("#time-slider .slider-handle")
-		.css("background-color", "#555")
-		.css("background-image", "none");
-
 	$("#time-slider").slider({
 		formatter: function(value) {
 			// Update tooltip
@@ -284,6 +280,12 @@ function setUpControls(crimes) {
 		filters[TIME_FILTER].max = event.value[1];
 		update(filterCrimes(crimes));
 	});
+	$("#sliderTime .slider-handle")
+		.css("width", "5px")
+		.css("margin-left", "-2px")
+		.css("background-color", "#888")
+		.css("background-image", "none");
+
 
 	// Handle Crime Categories
 	$('.dropdown-menu').on("click", function(event) {
