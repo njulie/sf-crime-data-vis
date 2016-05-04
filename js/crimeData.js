@@ -5,16 +5,12 @@
 // get the svg map
 var svgContainer = d3.select("svg");
 
-// Morning: pastel purple
-// Afternoon/Evening: purple
-// Night: dark purple/black
-//var color = d3.scale.ordinal().range(["#ddd1e7", "#663096", "#190729"]);
+const pinSize = 60, // width and height of map pins
+	defaultRadius = 100; // default city radius in pixels (must be in miles)
 
-var pinSize = 60, // width and height of map pins
-	defaultRadius = 100, // default city radius in pixels (must be in miles)
-	mileToPixelRatio = 0; // how many pixels are in a mile
+var mileToPixelRatio = 0; // how many pixels are in a mile
 
-var colorA = "#7BCC70",
+const colorA = "#7BCC70",
 	colorB = "#72587F";
 
 // Define the div for the tooltip
@@ -340,18 +336,7 @@ function update(crimes) {
 			this.parentElement.appendChild(this);
 		})
 
-		// Set Color Attributes by Time of Day
-		.style("fill", "#555"/*function(d) {
-			//Get hour
-			var hour = parseInt(d.Time.split(":")[0]);
-			if(hour > 4 && hour <= 12) {
-				return color("morning");
-			} else if (hour > 12 && hour <= 20) {
-				return color("afternoon");
-			} else {
-				return color("evening");
-			}
-		}*/);
+		.style("fill", "#555");
 
 
 	circles.exit().remove();
