@@ -93,15 +93,11 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 function drawCityPins(Ax, Ay, Bx, By, crimes) {
 
 	var drag = d3.behavior.drag()
-		/*.origin(function() { 
-	        var t = d3.select(this);
-	        return {x: t.attr("x"), y: t.attr("y")};
-	    })*/
 		.on("dragstart", function() {
   			d3.event.sourceEvent.stopPropagation(); // silence other listeners
 		})
-		.on("drag", function() { mover(d, i, crimes); });
-		//.on("drag", mover);
+		//.on("drag", function() { mover(d, i, crimes); });
+		.on("drag", mover);
 
 	// Reposition the city pins when dragged
 	function mover(d, i, crimes) {
@@ -283,7 +279,7 @@ function setUpControls(crimes) {
 	$("#sliderTime .slider-handle")
 		.css("width", "5px")
 		.css("margin-left", "-2px")
-		.css("background-color", "#888")
+		.css("background-color", "#666")
 		.css("background-image", "none");
 
 
