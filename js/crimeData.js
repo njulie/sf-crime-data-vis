@@ -23,13 +23,14 @@ var colorA = "#7BCC70",
 	 .style("opacity", 0);
 
 // Global Filters Array
-var filters = [[],{},{},{}];
+var filters = [[],{},{},{},{}];
 
 // Indexes of Different Filters
 const WEEKDAY_FILTER = 0;
 const DATERANGE_FILTER = 1;
 const INTERSECTION_FILTER = 2;
 const TIME_FILTER = 3;
+const CATEGORY_FILTER = 4;
 /* ============= END GLOBAL VARIABLE DEFINITIONS ============== */
 
 
@@ -229,8 +230,6 @@ $("#Bknob .slider-handle")
 /* ============ END CITY RADIUS FUNCTIONALITY ================*/
 
 
-
-
 function setUpControls(crimes) {
 
 	// Handle Weekday Checkbox Settings
@@ -268,6 +267,21 @@ function setUpControls(crimes) {
 		filters[TIME_FILTER].min = event.value[0];
 		filters[TIME_FILTER].max = event.value[1];
 		update(filterCrimes(crimes));
+	});
+
+	$('.dropdown-menu').on("click", function(event) {
+		event.preventDefault();
+		var text = event.target.text;
+		if(text) {
+			if(text === "All Crimes") {
+				filters[CATEGORY_FILTER].category = null;
+				$('#categoryButton').text("Select Category: All Crimes");
+			} else {
+				filters[CATEGORY_FILTER].category = text.toUpperCase();
+				$('#categoryButton').text("Select Category: " + text);
+			}
+			update(filterCrimes(crimes));
+		}
 	});
 
 	//Initialize visual
@@ -332,6 +346,12 @@ function filterCrimes(crimes) {
 			return false;
 		} else if(val_hour == filters[TIME_FILTER].max && val_min > 0) {
 			return false;
+		}
+		//Filter Category
+		if(filters[CATEGORY_FILTER].category) {
+			if(filters[CATEGORY_FILTER].category !== value.Category) {
+				return false;
+			}
 		}
 		return true;
 	});
