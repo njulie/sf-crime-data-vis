@@ -282,18 +282,18 @@ function setUpControls(crimes) {
 	filters[INTERSECTION_FILTER].B = pointB;
 
 	$("#Aknob .slider-handle")
-	.css("background-color", colorA)
-	.css("background-image", "none");
-$("#Bknob .slider-handle")
-	.css("background-color", colorB)
-	.css("background-image", "none");
+		.css("background-color", colorA)
+		.css("background-image", "none");
+	$("#Bknob .slider-handle")
+		.css("background-color", colorB)
+		.css("background-image", "none");
 
-$("#Aknob .slider-selection")
-	.css("background-color", "#ccc")
-	.css("background-image", "none");
-$("#Bknob .slider-selection")
-	.css("background-color", "#ccc")
-	.css("background-image", "none");
+	$("#Aknob .slider-selection")
+		.css("background-color", "#ccc")
+		.css("background-image", "none");
+	$("#Bknob .slider-selection")
+		.css("background-color", "#ccc")
+		.css("background-image", "none");
 
 
 	// Handle Time of Day Slider
