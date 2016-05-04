@@ -358,7 +358,7 @@ function update(crimes) {
 
 	// Select all data points
 	var circles = svgContainer.selectAll("circle")
-						.data(crimes)
+						.data(crimes, function(d) {return d.IncidentNumber;})
 						.attr("class", "update");
 
 	circles.enter().append("circle").attr("class","enter")
