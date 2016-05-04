@@ -3,93 +3,52 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 		<title>CS448B Assignment 3</title>
-		<!-- Custom CSS -->
-	    <link rel="stylesheet" href="css/main.css" type="text/css">
 		<!-- Bootstrap -->
     	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.2/css/bootstrap-slider.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/css/bootstrap-datepicker3.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+
+		<!-- Custom CSS -->
+	    <link rel="stylesheet" href="css/main.css" type="text/css">
 	</head>
 
 	<body>
 		<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-		<header>
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-md-8 col-md-offset-2 text-center">
 
-					</div>
-				</div>
-			</div>
-		</header>
 
 		<section id="map">
 	        <div class="container">
 	            <div class="row">
 					<div class="col-lg-4 text-center" id="map-controls">
-						<h1>SF Crimes 2016</h1>
-						<h5>Julie Ni and Haiyin Wang</h5>
+						<h1>Crimes in SF, CA</h1>
+						<h4>--for March 2 to April 1 (2016)</h4>
 
 						<div class="radiuscontroller filtersection">
-							<!-- slider for city A -->
-							<input id="sliderA" type="text" data-slider-id="Aknob" data-slider-min="0" data-slider-max="500" data-slider-step="1" data-slider-value="250" data-slider-tooltip="hide">
-							<span id="sliderALabel">&nbsp; &nbsp; &nbsp;<span id="sliderAVal">3.5</span> miles</span>
-
 							<p><br></p>
+							<h5>City Radii</h5>
+							<!-- slider for city A -->
+							<input id="sliderA" type="text" data-slider-id="Aknob" data-slider-min="0" data-slider-max="500" data-slider-step="1" data-slider-value="175" data-slider-tooltip="hide">
+							<span class="horizontal-padding-left" id="sliderALabel"><span id="sliderAVal">2.4</span> miles</span>
+
+							<p></p>
 
 							<!-- slider for city B -->
-							<input id="sliderB" type="text" data-slider-id="Bknob" data-slider-min="0" data-slider-max="500" data-slider-step="1" data-slider-value="250" data-slider-tooltip="hide">
-							<span id="sliderBLabel">&nbsp; &nbsp; &nbsp;<span id="sliderBVal">3.5</span> miles</span>
+							<input id="sliderB" type="text" data-slider-id="Bknob" data-slider-min="0" data-slider-max="500" data-slider-step="1" data-slider-value="175" data-slider-tooltip="hide">
+							<span class="horizontal-padding-left" id="sliderBLabel"><span id="sliderBVal">2.4</span> miles</span>
 						</div>
 
-						<div class="weekdaycontroller filtersection">
-							<h4>Weekdays</h4>
-							<div class="btn-group" data-toggle="buttons" id="weekdayfilter">
-								<label class="btn btn-default active">
-									<input type="checkbox" value="Sunday" checked> Sun
-								</label>
-								<label class="btn btn-default active">
-									<input type="checkbox" value="Monday" checked> Mon
-								</label>
-								<label class="btn btn-default active">
-									<input type="checkbox" value="Tuesday" checked> Tue
-								</label>
-								<label class="btn btn-default active">
-									<input type="checkbox" value="Wednesday" checked> Wed
-								</label>
-								<label class="btn btn-default active">
-									<input type="checkbox" value="Thursday" checked> Thu
-								</label>
-								<label class="btn btn-default active">
-									<input type="checkbox" value="Friday" checked> Fri
-								</label>
-								<label class="btn btn-default active">
-									<input type="checkbox" value="Saturday" checked> Sat
-								</label>
-							</div>
-						</div>
-						<div class="daterangecontroller filtersection">
-							<h4>Date Range</h4>
-							<div class="input-daterange input-group" id="datepicker">
-							    <input type="text" class="input-sm form-control" id="datepickermin" value="03/02/2016"/>
-							    <span class="input-group-addon">to</span>
-							    <input type="text" class="input-sm form-control" id="datepickermax" value="04/01/2016"/>
-							</div>
-						</div>
-						<div class="timerangecontroller filtersection">
-							<h4>Time of Day Range</h4>
-							<b class="horizontal-padding-right">12:00 AM</b> <input id="time-slider" type="text" data-slider-min="0" data-slider-max="24" data-slider-step="1" data-slider-value="[0,24]" data-slider-handle="square"/> <b class="horizontal-padding-left">11:59PM</b>
-							<br />
-							<label id="timerangelabel">12:00 AM to 11:59 PM</label>
-						</div>
+						<p><br><br></p>
+						<h4>Filter By:</h4>
+
 						<div class="categorycontroller filtersection">
-							<h4>Crime Categories</h4>
-							<div class="dropdown text-left">
+							<h5>Crime Categories</h5>
+							<div class="dropdown text-left" style="display:inline-block">
 							  <button class="btn btn-default dropdown-toggle" type="button" id="categoryButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 							    Select Category: All Crimes
 							    <span class="caret"></span>
 							  </button>
-							  <ul class="dropdown-menu scrollable-menu" role="menu">
+							  <ul class="dropdown-menu scrollable-menu" style="margin-bottom: 30px; float:center"role="menu">
 								<li><a href="#">All Crimes</a></li>
 							    <li role="separator" class="divider"></li>
 							    <li><a href="#">Arson</a></li>
@@ -128,6 +87,55 @@
 							  </ul>
 							</div>
 						</div>
+
+						<div class="daterangecontroller filtersection">
+							<h5>Date Range</h5>
+							<div class="input-daterange input-group" id="datepicker">
+							    <input type="text" class="input-sm form-control" id="datepickermin" value="03/02/2016"/>
+							    <span class="input-group-addon">to</span>
+							    <input type="text" class="input-sm form-control" id="datepickermax" value="04/01/2016"/>
+							</div>
+						</div>
+
+						<div class="weekdaycontroller filtersection">
+							<h5>Day(s) of the Week</h5>
+							<div class="btn-group" data-toggle="buttons" id="weekdayfilter">
+								<label class="btn btn-default active">
+									<input type="checkbox" value="Sunday" checked> Sun
+								</label>
+								<label class="btn btn-default active">
+									<input type="checkbox" value="Monday" checked> Mon
+								</label>
+								<label class="btn btn-default active">
+									<input type="checkbox" value="Tuesday" checked> Tue
+								</label>
+								<label class="btn btn-default active">
+									<input type="checkbox" value="Wednesday" checked> Wed
+								</label>
+								<label class="btn btn-default active">
+									<input type="checkbox" value="Thursday" checked> Thu
+								</label>
+								<label class="btn btn-default active">
+									<input type="checkbox" value="Friday" checked> Fri
+								</label>
+								<label class="btn btn-default active">
+									<input type="checkbox" value="Saturday" checked> Sat
+								</label>
+							</div>
+						</div>
+						
+						<div class="timerangecontroller filtersection">
+							<h5>Time of Day</h5>
+							<i class="fa fa-sun-o horizontal-padding-right" aria-hidden="true"></i>
+							<input id="time-slider" type="text" data-slider-id="sliderTime" data-slider-min="0" data-slider-max="24" data-slider-step="1" data-slider-value="[0,24]" data-slider-handle="square"/>
+							<i class="fa fa-moon-o horizontal-padding-left" aria-hidden="true"></i>
+							<p></p>
+							<label id="timerangelabel">12:00 AM to 11:59 PM</label>
+						</div>
+
+						<br><br>
+						<p>Julie Ni and Haiyin Wang</p>
+						
 					</div>
 					<div class="col-lg-8" id="map-container">
 	                </div>
@@ -136,7 +144,7 @@
 	    </section>
 
 		<script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
-		<script   src="https://code.jquery.com/jquery-2.2.3.min.js"   integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="   crossorigin="anonymous"></script>
+		<!--<script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>-->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.2/bootstrap-slider.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/js/bootstrap-datepicker.min.js"></script>
