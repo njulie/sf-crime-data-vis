@@ -114,7 +114,6 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
   		.attr("id", "cityA")
 		.style("opacity", "0.9")
 		.call(drag);
-	filters[INTERSECTION_FILTER].cityA = projection.invert([Ax,Ay]);
 
 	// City B push pin
 	svgContainer.append("image")
@@ -127,20 +126,10 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
 		.attr("id", "cityB")
 		.style("opacity", "0.9")
 		.call(drag);
-	filters[INTERSECTION_FILTER].cityA = projection.invert([Bx,By]);
 
 }
 
 /* ============== END CITY PIN DRAGGABLE FUNCTIONALITY =============== */
-
-
-
-
-
-
-/* ============ END CITY RADIUS FUNCTIONALITY ================*/
-
-
 
 function setUpControls(crimes) {
 
@@ -239,7 +228,7 @@ function setUpControls(crimes) {
 		d3.select("#radiusB")
 			.attr("rx", slideEvt.value)
 			.attr("ry", slideEvt.value);
-		filters[INTERSECTION_FILTER].cityAradius = slideEvt.value;
+		filters[INTERSECTION_FILTER].cityBradius = slideEvt.value;
 		update(filterCrimes(crimes));
 	});
 
@@ -309,19 +298,23 @@ function filterCrimes(crimes) {
 		}
 
 		//Filter Date Range
-		var val_date = new Date(value.Date);
-		val_date.setDate(val_date.getDate()+1);
-		if(val_date < filters[DATERANGE_FILTER].min || val_date >= filters[DATERANGE_FILTER].max) {
-			return false;
+		if(filters[DATERANGE_FILTER].min) {
+			var val_date = new Date(value.Date);
+			val_date.setDate(val_date.getDate()+1);
+			if(val_date < filters[DATERANGE_FILTER].min || val_date >= filters[DATERANGE_FILTER].max) {
+				return false;
+			}
 		}
 
 		//Filter Time of Day
-		var val_hour = parseInt(value.Time.slice(0,2));
-		var val_min = parseInt(value.Time.slice(3));
-		if(val_hour < filters[TIME_FILTER].min || val_hour > filters[TIME_FILTER].max) {
-			return false;
-		} else if(val_hour == filters[TIME_FILTER].max && val_min > 0) {
-			return false;
+		if(filters[TIME_FILTER].min) {
+			var val_hour = parseInt(value.Time.slice(0,2));
+			var val_min = parseInt(value.Time.slice(3));
+			if(val_hour < filters[TIME_FILTER].min || val_hour > filters[TIME_FILTER].max) {
+				return false;
+			} else if(val_hour == filters[TIME_FILTER].max && val_min > 0) {
+				return false;
+			}
 		}
 
 		//Filter Intersection
