@@ -9,7 +9,7 @@ const pinSize = 26, // width and height of map pins
 	defaultRadius = 175; // default city radius in pixels
 
 var mileToPixelRatio = 0; // how many pixels are in a mile
-const EARTH_RADIUS = 3959; //radius of earth in miles
+const EARTH_RADIUS = 3958.8; //radius of earth in miles
 
 const colorA = "#7BCC70",
 	colorB = "#72587F";
@@ -29,11 +29,12 @@ const INTERSECTION_FILTER = 2;
 const TIME_FILTER = 3;
 const CATEGORY_FILTER = 4;
 
-filters[INTERSECTION_FILTER].cityA = projection.invert([200,375]);
+filters[INTERSECTION_FILTER].cityA = projection.invert([200 + (pinSize / 2), 375 + (pinSize / 2)]);
 filters[INTERSECTION_FILTER].cityAradius = defaultRadius;
-filters[INTERSECTION_FILTER].cityB =  projection.invert([450,375]);
+filters[INTERSECTION_FILTER].cityB =  projection.invert([450 + (pinSize / 2), 375 + (pinSize / 2)]);
 filters[INTERSECTION_FILTER].cityBradius = defaultRadius;
 /* ============= END GLOBAL VARIABLE DEFINITIONS ============== */
+
 
 function calculateMPR(coords1, coords2) {
 	// get corresponding pixel values of coordinates
@@ -43,13 +44,10 @@ function calculateMPR(coords1, coords2) {
 	// get distance between two points in pixels
 	var pixelX = pixels1[0] - pixels2[0];
 	var pixelY = pixels1[1] - pixels2[1];
-	var pixelDistance = Math.sqrt((pixelX * pixelX) + (pixelY * pixelY));
-	//console.log(pixelDistance);
+	var pixelDistance = Math.sqrt(Math.pow(pixelX, 2) + Math.pow(pixelY, 2));
 
 	// coords array are [lon, lat] while distance functions takes lat then long
 	var mileDistance = d3.geo.distance(coords1, coords2) * EARTH_RADIUS;
-	//console.log(mileDistance + " = distance in miles");
-
 	return (pixelDistance / mileDistance);
 }
 
@@ -120,7 +118,7 @@ function drawCityPins(Ax, Ay, Bx, By, crimes) {
 		.attr("ry", defaultRadius)
 		.attr("class", "cityRadius")
 		.attr("id", "radiusB")
-		.style("opacity", "0.35")
+		.style("opacity", "0.2")
 		.style("fill", colorB);
 
 	// City A push pin
