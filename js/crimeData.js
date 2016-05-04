@@ -6,7 +6,7 @@
 var svgContainer = d3.select("svg");
 
 const pinSize = 40, // width and height of map pins
-	defaultRadius = 100; // default city radius in pixels (must be in miles)
+	defaultRadius = 175; // default city radius in pixels (must be in miles)
 
 var mileToPixelRatio = 0; // how many pixels are in a mile
 
@@ -31,24 +31,6 @@ const CATEGORY_FILTER = 4;
 
 
 
-// Calculates the mile to pixel ratio used in adjusting the city radius
-// (Takes in 2 arrays of longitude and latitude for two data points)
-function calculateMPR(coords1, coords2) {
-	// get corresponding pixel values of coordinates
-	var pixels1 = projection(coords1),
-		pixels2 = projection(coords2);
-
-	// TESTING
-	//console.log(coords1 + " and " + coords2);
-	//console.log(pixels1 + " and " + pixels2);
-
-	// get distance between two points in pixels
-	var pixelX = pixels1[0] - pixels2[0];
-	var pixelY = pixels1[1] - pixels2[1];
-	var pixelDistance = Math.sqrt((pixelX * pixelX) + (pixelY * pixelY));
-	//console.log(pixelDistance);
-
-
 	/*
 	 * SOURCE FOR THIS FUNCTION USED
 	 * https://www.geodatasource.com/developers/javascript
@@ -69,6 +51,18 @@ function calculateMPR(coords1, coords2) {
 		return dist;
 	}
 
+// Calculates the mile to pixel ratio used in adjusting the city radius
+// (Takes in 2 arrays of longitude and latitude for two data points)
+function calculateMPR(coords1, coords2) {
+	// get corresponding pixel values of coordinates
+	var pixels1 = projection(coords1),
+		pixels2 = projection(coords2);
+
+	// get distance between two points in pixels
+	var pixelX = pixels1[0] - pixels2[0];
+	var pixelY = pixels1[1] - pixels2[1];
+	var pixelDistance = Math.sqrt((pixelX * pixelX) + (pixelY * pixelY));
+
 	// coords array are [lon, lat] while distance functions takes lat then long
 	var mileDistance = distance(coords1[1], coords1[0], coords2[1], coords2[0], "M");
 	//var mileDistance = d3.geo.distance(coords1, coords2);
@@ -84,7 +78,7 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 
 	// calculate mile-to-pixel ratio
 	mileToPixelRatio = calculateMPR(crimes.data[0].Location, crimes.data[crimes.data.length/2].Location);
-	//console.log(mileToPixelRatio + " pixels per mile!!!");
+	console.log(mileToPixelRatio + " pixels per mile!!!");
 
 	drawCityPins(200, 375, 450, 375); //default pin locations
 	//update(crimes.data);
@@ -96,7 +90,7 @@ d3.json("scpd-incidents.json", function(error, crimes) {
 /* ================ START CITY PIN DRAGGABLE FUNCTIONALITY =============== */
 
 // Reposition the city pins when dragged
-function mover(d) {
+function mover() {
 	var dragged = d3.select(this);
 	var radius = pinSize / 2;
 	var svgWidth = parseInt(svgContainer.attr("width")),
@@ -123,27 +117,6 @@ function mover(d) {
     
 }
 
-// function that filters crimes based on what is in the intersection
-/*function filteredIntersection(crimes) {
-	var curr_crimes = crimes.filter(function(value) {
-		var indicator = true;
-
-		//Filter by location
-		for (var i = 0; i < filters[INTERSECTION_FILTER].length; i++) {
-			if(value.Location === filters[INTERSECTION_FILTER][i]) {
-				return false;
-			} 
-		}
-		//Filter Date Range
-		var val_date = new Date(value.Date);
-		val_date.setDate(val_date.getDate()+1);
-		if(val_date < filters[DATERANGE_FILTER].min || val_date >= filters[DATERANGE_FILTER].max) {
-			return false;
-		}
-		return true;
-	});
-	return curr_crimes;
-}*/
 
 // Draw the city pins and make them draggable!
 function drawCityPins(Ax, Ay, Bx, By) {
@@ -249,8 +222,8 @@ $("#Bknob .slider-handle")
 	.css("background-color", colorB)
 	.css("background-image", "none");
 
-
 /* ============ END CITY RADIUS FUNCTIONALITY ================*/
+
 
 
 function setUpControls(crimes) {
@@ -283,23 +256,18 @@ function setUpControls(crimes) {
 	});
 
 
-	// Handle Intersection Data ===================
-
-	// Get the coordinates of the two map pins
+	// Handle Intersection Data
 	var cityA = d3.select("#radiusA"),
 		cityB = d3.select("#radiusB");
-	var pointA = projection.invert([parseInt(cityA.attr("cx")), parseInt(cityA.attr("cy"))]).
-		pointB = projection.invert([parseInt(cityB.attr("cx"), parseInt(cityB.attr("cy")))]);
-	//console.log(pointA);
-	//console.log(pointB);
+	var pointA = projection.invert([parseInt(cityA.attr("cx")), parseInt(cityA.attr("cy"))]),
+		pointB = projection.invert([parseInt(cityB.attr("cx")), parseInt(cityB.attr("cy"))]);
 
-	
-	
-	// update(filterCrimes(crimes));
+	filters[INTERSECTION_FILTER].A = pointA;
+	filters[INTERSECTION_FILTER].B = pointB;
 
 
+	// Handle Time of Day Slider
 	var s = $("#ex2").slider();
-
 
 	$("#time-slider").slider({
 		formatter: function(value) {
@@ -329,7 +297,7 @@ function setUpControls(crimes) {
 	});
 
 	//Initialize visual
-	update(crimes);
+	update(filterCrimes(crimes));
 }
 
 function getConvertedTime(value) {
@@ -356,6 +324,7 @@ function setUpDatePicker(crimes) {
 	mindate.setDate(mindate.getDate()+1);
 	filters[DATERANGE_FILTER].min = mindate;
 	filters[DATERANGE_FILTER].max = maxdate;
+
 	// Set up Date Range selector
 	var datepicker = $('.input-daterange').datepicker({
 		startDate: mindate,
@@ -371,7 +340,6 @@ function setUpDatePicker(crimes) {
 // Filters crimes based on Weekday, Date range, and intersection
 function filterCrimes(crimes) {
 	var curr_crimes = crimes.filter(function(value) {
-		//var indicator = true;
 
 		//Filter Days of Week
 		for(var i = 0; i < filters[WEEKDAY_FILTER].length; i++) {
@@ -386,6 +354,7 @@ function filterCrimes(crimes) {
 		if(val_date < filters[DATERANGE_FILTER].min || val_date >= filters[DATERANGE_FILTER].max) {
 			return false;
 		}
+
 		//Filter Time of Day
 		var val_hour = parseInt(value.Time.slice(0,2));
 		var val_min = parseInt(value.Time.slice(3));
@@ -394,26 +363,37 @@ function filterCrimes(crimes) {
 		} else if(val_hour == filters[TIME_FILTER].max && val_min > 0) {
 			return false;
 		}
+
 		//Filter Category
 		if(filters[CATEGORY_FILTER].category) {
 			if(filters[CATEGORY_FILTER].category !== value.Category) {
 				return false;
 			}
 		}
+
+		//Filter Intersection
+		var distFromA = distance(filters[INTERSECTION_FILTER].A[1],
+								 filters[INTERSECTION_FILTER].A[0],
+								 value.Location[1], value.Location[0], "M"),
+			distFromB = distance(filters[INTERSECTION_FILTER].B[1],
+								 filters[INTERSECTION_FILTER].B[0],
+								 value.Location[1], value.Location[0], "M");
+		var maxAdist = d3.select("#radiusA").attr("rx"),
+			maxBdist = d3.select("#radiusB").attr("rx");
+		// distA has to be less than radius of A AND distB has to be less than radius B to be in intersection
+		if (distFromA * mileToPixelRatio > maxAdist || distFromB * mileToPixelRatio > maxBdist) {
+			return false;
+		}
+
 		return true;
 
 		//Filter Intersection
-
-		// iterate through all the data points and get their coordinates
-	// For each data point, compare the longitude and latitude
-		// compare longitudes (smaller number is left)
-			// if longA < longB, then data x points need to be greater than longA and less than longB
-		// compare latitudes (smaller number is down)
-			// if latA < latB, then data y points need to be greater than latA and less than latB
-		// SO IF dataCoords longitude < smallerLong || data Coords longitude > largerLong
-		//		|| dataCoords latitude < smallerLat || dataCoords latitude > largerLat
-		//			then add to filter[INTERSECTION_FILTER].push()
-
+		//function distance(lat1, lon1, lat2, lon2, unit)
+		
+		//console.log(distFromA);
+		//console.log(distFromB);
+		//if (distFromA < d3.select("#radiusA"))
+	
 
 	});
 
