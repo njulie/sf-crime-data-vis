@@ -209,44 +209,8 @@ function redrawCityPins(crimes) {
 
 
 
-/* ============ START CITY RADIUS FUNCTIONALITY =============== */
-
-// Initialize sliders
-var sliderA = $("#sliderA"),
-	sliderB = $("#sliderB");
-
-// Make sliders slide and control radii of cities
-sliderA.slider();
-sliderA.on("slide", function(slideEvt) {
-	$("#sliderAVal").text(Math.round((slideEvt.value / mileToPixelRatio) * 10) / 10); //display radius in miles
-	d3.select("#radiusA")
-		.attr("rx", slideEvt.value)
-		.attr("ry", slideEvt.value);
-});
-
-sliderB.slider();
-sliderB.on("slide", function(slideEvt) {
-	$("#sliderBVal").text(Math.round((slideEvt.value / mileToPixelRatio) * 10) / 10); //display radius in miles
-	d3.select("#radiusB")
-		.attr("rx", slideEvt.value)
-		.attr("ry", slideEvt.value);
-});
-
-
 // Changing colors of the slider knobs to match the cities
-$("#Aknob .slider-handle")
-	.css("background-color", colorA)
-	.css("background-image", "none");
-$("#Bknob .slider-handle")
-	.css("background-color", colorB)
-	.css("background-image", "none");
 
-$("#Aknob .slider-selection")
-	.css("background-color", "#ccc")
-	.css("background-image", "none");
-$("#Bknob .slider-selection")
-	.css("background-color", "#ccc")
-	.css("background-image", "none");
 
 /* ============ END CITY RADIUS FUNCTIONALITY ================*/
 
@@ -282,6 +246,31 @@ function setUpControls(crimes) {
 	});
 
 
+	/* ============ START CITY RADIUS FUNCTIONALITY =============== */
+
+	// Initialize sliders
+	var sliderA = $("#sliderA"),
+		sliderB = $("#sliderB");
+
+	// Make sliders slide and control radii of cities
+	sliderA.slider();
+	sliderA.on("slide", function(slideEvt) {
+		$("#sliderAVal").text(Math.round((slideEvt.value / mileToPixelRatio) * 10) / 10); //display radius in miles
+		d3.select("#radiusA")
+			.attr("rx", slideEvt.value)
+			.attr("ry", slideEvt.value);
+		update(filterCrimes(crimes));
+	});
+
+	sliderB.slider();
+	sliderB.on("slide", function(slideEvt) {
+		$("#sliderBVal").text(Math.round((slideEvt.value / mileToPixelRatio) * 10) / 10); //display radius in miles
+		d3.select("#radiusB")
+			.attr("rx", slideEvt.value)
+			.attr("ry", slideEvt.value);
+		update(filterCrimes(crimes));
+	});
+
 	// Handle Intersection Data
 	var cityA = d3.select("#radiusA"),
 		cityB = d3.select("#radiusB");
@@ -291,6 +280,20 @@ function setUpControls(crimes) {
 	//update filter with the two points
 	filters[INTERSECTION_FILTER].A = pointA;
 	filters[INTERSECTION_FILTER].B = pointB;
+
+	$("#Aknob .slider-handle")
+	.css("background-color", colorA)
+	.css("background-image", "none");
+$("#Bknob .slider-handle")
+	.css("background-color", colorB)
+	.css("background-image", "none");
+
+$("#Aknob .slider-selection")
+	.css("background-color", "#ccc")
+	.css("background-image", "none");
+$("#Bknob .slider-selection")
+	.css("background-color", "#ccc")
+	.css("background-image", "none");
 
 
 	// Handle Time of Day Slider
@@ -427,6 +430,8 @@ function filterCrimes(crimes) {
 
 // Update crime data and city pins
 function update(crimes) {
+	svgContainer.selectAll('circle')                                                  
+		.data(crimes).remove();
 
 	// Select all data points
 	var circles = svgContainer.selectAll("circle")
@@ -436,8 +441,9 @@ function update(crimes) {
 	circles.enter().append("circle").attr("class","enter")
 		.attr("cx", function (d) { return projection(d.Location)[0]; })
 		.attr("cy", function (d) { return projection(d.Location)[1]; })
-		.attr("r", 2)
+		.attr("r", 2);
 
+	circles
 		.on("mouseover", function(d) {
 			this.setAttribute('r', 10);
 			this.setAttribute("style", "fill: #F57C00");
@@ -447,7 +453,7 @@ function update(crimes) {
             div.html(d.Category + "<br/>Resolution: " + d.Resolution + "<br/>" + d.DayOfWeek)
                 .style("left", (d3.event.pageX - 60) + "px")
                 .style("top", (d3.event.pageY - 70) + "px");
-            })
+        })
         .on("mouseout", function(d) {
 			this.setAttribute('r', 2);
 			this.setAttribute("style", "fill: #8C1717");
@@ -458,8 +464,7 @@ function update(crimes) {
 		.on("mouseenter", function(d) {
 			this.parentElement.appendChild(this);
 		})
-
-		.style("fill", "#8C1717")
+		.style("fill", "#8C1717");
 
 
 	circles.exit().remove();
